@@ -2,11 +2,11 @@ project:
   type: website
 
 website:
-  title: Project Title
+  title: NSF Grant Terminations
   navbar:
     right:
       - icon: github
-        href: https://github.com/INFO-526-SU24/project-01 # Needs to be changed to your project repo
+        href: https://github.com/INFO-526-SU25/final-project-nathanielcross04
     left:
       - text: Project
         href: index.qmd

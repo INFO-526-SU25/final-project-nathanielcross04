@@ -1,11 +1,11 @@
 ---
-title: "Proposal title"
+title: "Examining Trump's Grant Terminations in Two Plots"
 subtitle: "Proposal"
 author: 
-  - name: "Team Name"
+  - name: "Nathaniel Cross"
     affiliations:
-      - name: "School of Information, University of Arizona"
-description: "Project description"
+      - name: "School of Government and Public Policy, University of Arizona"
+description: "This project examines trends in National Science Foundation research grants terminated under the Trump Administration in 2025 adopting a data visualization approach through the creation and interpretation of unique plots."
 format:
   html:
     code-tools: true
@@ -18,27 +18,71 @@ execute:
   warning: false
 ---
 
-```{r}
-#| label: load-pkgs
-#| message: false
-library(tidyverse)
+```{r setup}
+
+# install and load packages
+if(!require(pacman))
+  install.packages("pacman")
+
+pacman::p_load(tidyverse,
+               janitor)
+
+devtools::install_github("tidyverse/dsbox")
 ```
 
 ## Dataset
 
 ```{r}
-#| label: load-dataset
-#| message: false
+
+# Read in dataset
+raw_terminations <- read_csv("data/nsf_terminations_airtable.csv")
+
+# Clean data (code sourced from TidyTuesday)
+terminations <- raw_terminations |> 
+  janitor::clean_names() |> 
+  mutate(usaspending_obligated = stringi::stri_replace_first_fixed(usaspending_obligated, "$", "") |> 
+           readr::parse_number()) |> 
+  mutate(in_cruz_list = !is.na(in_cruz_list)) |> 
+  mutate(grant_number = as.character(grant_number)) 
+
+# Preview data
+terminations |>
+  glimpse()
+
+dim(terminations)
+
+colnames(terminations)
+
+terminations$directorate |>
+  unique()
 ```
 
-A brief description of your dataset including its provenance, dimensions, etc. as well as the reason why you chose this dataset.
+The above dataset yields from [Grant Watch](https://grant-watch.us/nsf-data.html), an independent project whose goal is to track the termination of scientific research grants under the Trump Administration's second term (beginning in 2025). It is led by [Noam Ross](https://www.noamross.net/), a computational researcher and Executive Director of rOpenSci, and [Scott Delaney](https://hsph.harvard.edu/profile/scott-delaney/), a research scientist at Harvard University's Department of Environmental Health. Although Grant Watch collects data on grants allocated by both the National Institutes of Health and the National Science Foundation (NSF), the scope of this project is reduced to grants terminated under the NSF largely due to the accessibility of this data from [TidyTuesday](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-05-06/readme.md).
 
-Make sure to load the data and use inline code for some of this information.
+The NSF Grant Terminations dataset is sourced largely by submissions from affected investigators and researchers at institutions across the United States, as well as from user-submitted lists of terminated grants, all of which are corroborated via the NSF's [Award Search](https://www.nsf.gov/awardsearch/) function and [USAspending.gov](https://www.usaspending.gov/). No centralized government database exists for tracking terminated grants.
+
+The dataset includes 1653 rows and 22 columns. Key columns include the project title and abstract for which the grant was awarded, value of the grant, dates of awarding and termination, and details about the organization the grant was allocated to. Both numerical and categorical variables are represented in the dataset, and a more comprehensive breakdown of these variables can be found in the `glimpse()` above, or in the metadata/readme.
+
+I chose this dataset for two primary reasons: the first is that as a student in the Master of Public Policy program, I find federal policy very interesting. This is especially true given the scope of the changes seen since the beginning of Trump's second term, including drastic measures like slashing research grants. The other main reason I selected this dataset is due to the contemporary relevance of this issue: the Trump Administration is enacting these terminations live, and this data is both formative and still evolving. Tracking these terminations is critical to documenting these measures aimed at inhibiting scientific research in the United States. And although I am well aware that the plots produced here will hardly rival the research I'm sure is being investigated on these grants, I find it important to increase awareness to both the scope of these terminations as well as the chaos surrounding them, making documentation ever more difficult.
 
 ## Questions
 
-The two questions you want to answer.
+1.  How does the quantity of grants terminated vary by state and is this heterogeneity correlated with the state's partisanship?
 
-## Analysis plan
+2.  How do directorates compare in terms of the dollar value of terminated grants by date?
 
--   A plan for answering each of the questions including the variables involved, variables to be created (if any), external data to be merged in (if any).
+    1.  Note: NSF directorates are the highest levels of administrative organizations administering grants. Examples include STEM Education and Social, Behavioral, and Economic Sciences.
+
+## Analysis Plans
+
+### Question 1
+
+1.  Sum the number of grants terminated by state, collapse the dataset. This will result in two variables: `org_state` and a new variable, `terminations_quant`, a double. There will be one row per state.
+2.  Merge dataset of 2024 presidential Electoral College outcomes by state (i.e. whether the state's electoral votes were allocated to Kamala Harris or Donald Trump). This will yield the creation of a new binary variable, `elect_trump_24`, a logic variable equal to 1/TRUE if the state allocated all (or a majority in the cases of Nebraska and Maine) of its electoral votes to Donald Trump in 2024, or 0/FALSE if the votes were allocated to Kamala Harris.
+3.  Create plot: I envision a map plot of states in the United States with each state colored either red or blue by 2024 presidential election result and the number of grants terminated mapped to the intensity of the color).
+
+### Question 2
+
+1.  Select the necessary variables for this plot: `directorate`, a character categorical column to identify the NSF organization awarding the grant; `usaspending_obligated`, the dollar value of funding lost by the grant terminations; and `termination_letter_date`, the date when the organization was informed of the termination of the grant. This variable is used as a proxy for termination date as actual expected end dates of the grants are only estimated and not confirmed.
+
+2.  Create plot: I envision time-series plots of moving averages of value of grant over time. These plots will be faceted by directorate. Based on what I've researched, ggplot has moving average functionality within the `geom_ma()` function, however if this is not able to capture the variation I want, I can calculate the moving averages by directorate in the data wrangling process.
