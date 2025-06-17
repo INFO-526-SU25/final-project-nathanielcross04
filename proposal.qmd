@@ -94,7 +94,7 @@ I chose this dataset for two primary reasons: the first is that as a student in 
 
 2.  Create plot: I envision time-series plots of moving averages of value of grant over time. These plots will be faceted by directorate. Based on what I've researched, ggplot has moving average functionality within the `geom_ma()` function, however if this is not able to capture the variation I want, I can calculate the moving averages by directorate in the data wrangling process.
 
-3.  \*Note: as revealed in the above code chunk, there are very few missing observations (four missings from `termination_letter_date`, two from `directorate`, and two `fromusespending_obligated`). Hence, these rows will be dropped when coding this plot.
+3.  \*Note: as revealed in the above code chunk, there are very few missing observations (four missings from `termination_letter_date`, two from `directorate`, and two from `usaspending_obligated`). Hence, these rows will be dropped when coding this plot.
 
 ## Plan of Attack
 
