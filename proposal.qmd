@@ -1,5 +1,5 @@
 ---
-title: "Examining Trump's Grant Terminations in Two Plots"
+title: "Examining Trump's Grant Terminations through Visualizations"
 subtitle: "Proposal"
 author: 
   - name: "Nathaniel Cross"
@@ -77,12 +77,16 @@ I chose this dataset for two primary reasons: the first is that as a student in 
 
 ### Question 1
 
-1.  Sum the number of grants terminated by state, collapse the dataset. This will result in two variables: `org_state` and a new variable, `terminations_quant`, a double. There will be one row per state.
+1.  Data wrangling: sum the number of grants terminated by state, collapse the dataset. This will result in two variables: `org_state` and a new variable, `terminations_quant`, a double. There will be one row per state.
 2.  Merge dataset of 2024 presidential Electoral College outcomes by state (i.e. whether the state's electoral votes were allocated to Kamala Harris or Donald Trump). This will yield the creation of a new binary variable, `elect_trump_24`, a logic variable equal to 1/TRUE if the state allocated all (or a majority in the cases of Nebraska and Maine) of its electoral votes to Donald Trump in 2024, or 0/FALSE if the votes were allocated to Kamala Harris.
-3.  Create plot: I envision a map plot of states in the United States with each state colored either red or blue by 2024 presidential election result and the number of grants terminated mapped to the intensity of the color).
+3.  \*Note: I have yet to figure out how to encode both of these variables (`terminations_quant` and `elect_trump_24` into the aesthetic mappings of the map plot. I do not know whether I have to encode them both into a single variable (where positive values of quantity of grants terminated represent "red" states and negative values represent "blue" states), or if I can separately map these variables onto fill and intensity aesthetics. Advice would be appreciated.
+4.  \*Note: I also need to figure out a way to standardize the grant terminations variable. Solely using the quantity of grants terminated will introduce skewness as larger, more populated states will inherently have more grants that can be cancelled, thereby veiling the relationship between a state's partisanship and the number of grants cancelled. I could do this by using the value of grants terminated divided by the state's GDP, but I am not sold on this solution. Again, advice would be appreciated.
+5.  Create plot: I envision a map plot of states in the United States with each state colored either red or blue by 2024 presidential election result and the number of grants terminated mapped to the intensity of the color). States without a winner-take-all electoral system (i.e. Nebraska and Maine) will be coded by the candidate who won the majority of that state's electoral votes in 2024 (Trump in Nebraska and Harris in Maine). This behavior will be noted in the write-up and in the plot itself.
+6.  The plot will be first introduced by showing a single state coded by its 2024 presidential outcome and quantity of grant terminations. This will help ease the viewer into understanding the chart. Then the whole country will be displayed as well as smaller/regional chunks of areas with smaller/more dense states. This helps ensure that the mapped data is viewable in every state.
+7.  A table of the grant terminations by state will be shown in the write-up to allow for more detailed analysis.
 
 ### Question 2
 
-1.  Select the necessary variables for this plot: `directorate`, a character categorical column to identify the NSF organization awarding the grant; `usaspending_obligated`, the dollar value of funding lost by the grant terminations; and `termination_letter_date`, the date when the organization was informed of the termination of the grant. This variable is used as a proxy for termination date as actual expected end dates of the grants are only estimated and not confirmed.
+1.  Data wrangling: select the necessary variables for this plot: `directorate`, a character categorical column to identify the NSF organization awarding the grant; `usaspending_obligated`, the dollar value of funding lost by the grant terminations; and `termination_letter_date`, the date when the organization was informed of the termination of the grant. This variable is used as a proxy for termination date as actual expected end dates of the grants are only estimated and not confirmed. I do not expect to need further wrangling.
 
 2.  Create plot: I envision time-series plots of moving averages of value of grant over time. These plots will be faceted by directorate. Based on what I've researched, ggplot has moving average functionality within the `geom_ma()` function, however if this is not able to capture the variation I want, I can calculate the moving averages by directorate in the data wrangling process.
