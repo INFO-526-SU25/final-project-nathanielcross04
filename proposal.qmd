@@ -70,11 +70,17 @@ I chose this dataset for two primary reasons: the first is that as a student in 
 
 ## Questions
 
-1.  How does the quantity of grants terminated vary by state and is this heterogeneity correlated with the state's partisanship?
+**1. Were terminations clustered by geography or institution type?**
 
-2.  How do directorates compare in terms of the dollar value of terminated grants by date?
+This question attempts to analyze how the quantity of grants terminated varies by state, and will superimpose state partisanship to understand how heterogeneity in terminated grants is impacted by this variable.
 
-    1.  Note: NSF directorates are the highest levels of administrative organizations administering grants. Examples include STEM Education and Social, Behavioral, and Economic Sciences.
+Hypothesis: I expect Democrat-leaning states may have more grants canceled due to the polarized nature of these terminations.
+
+**2. Which scientific domains saw the highest termination rates?**
+
+This question uses directorates to compare the dollar value of terminated grants over time. NSF directorates are the highest levels of administrative organizations administering grants. Examples include STEM Education and Social, Behavioral, and Economic Sciences.
+
+Hypothesis: I expect directorates relating to climate change and STEM research to be most affected at the outset of the cancellations.
 
 ## Analysis Plans
 
