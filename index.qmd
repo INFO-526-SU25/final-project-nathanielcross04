@@ -18,16 +18,6 @@ execute:
   output: false
 ---
 
-## Abstract
-
-## General Introduction
-
-## Question 1
-
-### Introduction
-
-### Approach
-
 ```{r}
 #| label: R setup
 
@@ -75,8 +65,140 @@ terminations |>
   geom_histogram()
 ```
 
+## Abstract
+
+## General Introduction
+
+## Question 1
+
+### Introduction
+
+### Approach
+
+### Analysis
+
 ```{r}
-#| label: Question 1 data wrangling
+#| label: Data wrangling for question 1
+
+# Subsetting data and filtering out NAs
+term2 <- terminations |>
+  select(
+    termination_letter_date, 
+    directorate, 
+    usaspending_obligated
+    ) |>
+  filter(!if_any(everything(), is.na))
+
+# Distinct directorates
+term2 |> select(directorate) |> distinct()
+
+# Filtering out unneeded directorates
+term2 <- term2 |>
+  filter(directorate != "Office of the Director") 
+
+# Cleaning directorate names
+term2 <- term2 |>
+  mutate(directorate = str_remove_all(term2$directorate, "\""))
+
+# Summarize data
+term2_final <- term2 |>
+  group_by(directorate, termination_letter_date) |>
+  summarize(cancel_grant = sum(usaspending_obligated), .groups = "drop") |>
+  arrange(directorate, termination_letter_date) |>
+  group_by(directorate) |>
+  mutate(cum_cancel_grant = cumsum(cancel_grant),
+         cum_cancel_grant_millions = cum_cancel_grant / 1000000
+         )
+
+# Converting directorate to factor
+term2_final$directorate = as.factor(as.character(term2_final$directorate))
+
+term2_final <- term2_final |>
+  mutate(directorate = fct_rev(fct_relevel( 
+           directorate,
+           "STEM Education",
+           "Mathematical and Physical Sciences",
+           "Social, Behavioral and Economic Sciences",
+           "Technology, Innovation and Partnerships",
+           "Geosciences",
+           "Computer and Information Science and Engineering",
+           "Biological Sciences",
+           "Engineering"
+           ))
+  )
+```
+
+```{r}
+#| label: Set ggplot settings
+
+# Set theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 20, base_family = "Source Sans 3"))
+```
+
+```{r}
+#| label: Question 1 plot
+#| fig-width: 7
+#| fig-height: 14
+#| execute:
+#| echo: true
+#| output: true
+#| fig-alt: "The figure is a faceted line graph titled, 'STEM education grants hit hardest by Trump terminations' and depicts canceled National Science Foundation grants throughout the spring of 2025 by directorate. Canceled grants are measured through a cumulative sum, and are tracked across a month-long time period from April 18 to May 15. The data shows that most directorates saw a slight increase in value of canceled grants, especially at the end of April, these directorates mostly plateaued between $50 and $100 million USD in canceled grant value. However, for grants allocated to STEM education organizations or projects, value canceled increased drastically, both at the end of April and the beginning of May, resulting in a cumulaitve $900 million USD in grants terminated for this directorate."
+
+# Plot
+term2_final |>
+  ggplot(aes(
+    x = termination_letter_date, 
+    y = cum_cancel_grant_millions, 
+    color = directorate)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  facet_wrap(vars(directorate), nrow = 8, scales = "free") +
+  labs(
+    y = "Cumulative sum of terminated grants\n(in millions of USD)\n",
+    x = NULL,
+    title = "Trump grant terminations hit\nSTEM education initiatives hardest",
+    subtitle = "National Science Foundation grants canceled in the spring of 2025, by directorate",
+    caption = "Source: Grant Watch | TidyTuesday"
+  ) +
+  scale_y_continuous(
+    breaks = c(0, 450, 900), 
+    limits = c(0, 900),
+    labels = scales::label_dollar()) +
+  scale_x_date(
+    limits = as.Date(c("2025-04-18", "2025-05-15")),
+    breaks = as.Date(c("2025-04-18", "2025-04-25", "2025-05-02", "2025-05-09", "2025-05-15")),
+    date_labels = "%B %d") +
+  scale_color_okabeito(order = 1:8, reverse = TRUE) +
+  theme(
+    plot.title.position = "plot",
+    plot.margin = margin(t = 1, l = 1.5, b = 1, r = 1, unit = "lines"),
+    legend.position = "none",
+    plot.title = element_text(face = "bold", size = 55, lineheight = 0.5),
+    axis.text.y = element_text(color = "#4f4f4f"),
+    axis.text.x = element_text(color = "#4f4f4f"),
+    axis.title = element_text(color = "black", size = 25, lineheight = 0.5),
+    plot.caption = element_text(color = "#4f4f4f")
+  )
+```
+
+**Alt text:** The figure is a faceted line graph titled, 'STEM education grants hit hardest by Trump terminations' and depicts canceled National Science Foundation grants throughout the spring of 2025 by directorate. Canceled grants are measured through a cumulative sum, and are tracked across a month-long time period from April 18 to May 15. The data shows that most directorates saw a slight increase in value of canceled grants, especially at the end of April, these directorates mostly plateaued between \$50 and \$100 million USD in canceled grant value. However, for grants allocated to STEM education organizations or projects, value canceled increased drastically, both at the end of April and the beginning of May, resulting in a cumulative \$900 million USD in grants terminated for this directorate.
+
+::: callout-note
+Alt text also embedded in source code for enhanced screen-reading capacity.
+:::
+
+### Discussion
+
+## Question 2
+
+### Introduction
+
+### Approach
+
+### Analysis
+
+```{r}
+#| label: Question 2 data wrangling
 
 # Collapse total grant terminations by state
 term1 <- terminations |>
@@ -182,137 +304,20 @@ term1_final <- term1_merged |>
   )
 ```
 
-### Analysis
-
-```{r}
-#| label: Question 1 plotting
-#| execute:
-#| echo: true
-#| output: true
-
-
-
-```
-
-### Discussion
-
-## Question 2
-
-### Introduction
-
-### Approach
-
-### Analysis
-
-```{r}
-#| label: Data wrangling for question 2
-
-# Subsetting data and filtering out NAs
-term2 <- terminations |>
-  select(
-    termination_letter_date, 
-    directorate, 
-    usaspending_obligated
-    ) |>
-  filter(!if_any(everything(), is.na))
-
-# Distinct directorates
-term2 |> select(directorate) |> distinct()
-
-# Filtering out unneeded directorates
-term2 <- term2 |>
-  filter(directorate != "Office of the Director") 
-
-# Cleaning directorate names
-term2 <- term2 |>
-  mutate(directorate = str_remove_all(term2$directorate, "\""))
-
-# Summarize data
-term2_final <- term2 |>
-  group_by(directorate, termination_letter_date) |>
-  summarize(cancel_grant = sum(usaspending_obligated), .groups = "drop") |>
-  arrange(directorate, termination_letter_date) |>
-  group_by(directorate) |>
-  mutate(cum_cancel_grant = cumsum(cancel_grant),
-         cum_cancel_grant_millions = cum_cancel_grant / 1000000
-         )
-
-# Converting directorate to factor
-term2_final$directorate = as.factor(as.character(term2_final$directorate))
-
-term2_final <- term2_final |>
-  mutate(directorate = fct_rev(fct_relevel( 
-           directorate,
-           "STEM Education",
-           "Mathematical and Physical Sciences",
-           "Social, Behavioral and Economic Sciences",
-           "Technology, Innovation and Partnerships",
-           "Geosciences",
-           "Computer and Information Science and Engineering",
-           "Biological Sciences",
-           "Engineering"
-           ))
-  )
-```
-
-```{r}
-#| label: Set ggplot settings
-
-# Set theme for ggplot2
-ggplot2::theme_set(ggplot2::theme_minimal(base_size = 20, base_family = "Source Sans 3"))
-```
-
 ```{r}
 #| label: Question 2 plot
-#| fig-width: 7
-#| fig-height: 14
 #| execute:
 #| echo: true
 #| output: true
-#| fig-alt: "The figure is a faceted line graph titled, 'STEM education grants hit hardest by Trump terminations' and depicts canceled National Science Foundation grants throughout the spring of 2025 by directorate. Canceled grants are measured through a cumulative sum, and are tracked across a month-long time period from April 18 to May 15. The data shows that most directorates saw a slight increase in value of canceled grants, especially at the end of April, these directorates mostly plateaued between $50 and $100 million USD in canceled grant value. However, for grants allocated to STEM education organizations or projects, value canceled increased drastically, both at the end of April and the beginning of May, resulting in a cumulaitve $900 million USD in grants terminated for this directorate."
+#| fig-alt: "XXX"
 
-# Plot
-term2_final |>
-  ggplot(aes(
-    x = termination_letter_date, 
-    y = cum_cancel_grant_millions, 
-    color = directorate)) +
-  geom_line(linewidth = 1.1) +
-  geom_point(size = 2) +
-  facet_wrap(vars(directorate), nrow = 8, scales = "free") +
-  labs(
-    y = "Cumulative sum of terminated grants\n(in millions of USD)\n",
-    x = NULL,
-    title = "STEM education grants hit hardest\nby Trump terminations",
-    subtitle = "National Science Foundation grants canceled in the spring of 2025, by directorate",
-    caption = "Source: Grant Watch | TidyTuesday"
-  ) +
-  scale_y_continuous(
-    breaks = c(0, 450, 900), 
-    limits = c(0, 900),
-    labels = scales::label_dollar()) +
-  scale_x_date(
-    limits = as.Date(c("2025-04-18", "2025-05-15")),
-    breaks = as.Date(c("2025-04-18", "2025-04-25", "2025-05-02", "2025-05-09", "2025-05-15")),
-    date_labels = "%B %d") +
-  scale_color_okabeito(order = 1:8, reverse = TRUE) +
-  theme(
-    plot.title.position = "plot",
-    plot.margin = margin(t = 1, l = 1.5, b = 1, r = 1, unit = "lines"),
-    legend.position = "none",
-    plot.title = element_text(face = "bold", size = 55, lineheight = 0.5),
-    axis.text.y = element_text(color = "#4f4f4f"),
-    axis.text.x = element_text(color = "#4f4f4f"),
-    axis.title = element_text(color = "black", size = 25, lineheight = 0.5),
-    plot.caption = element_text(color = "#4f4f4f")
-  )
+
+
+
+
+
+
 ```
-
-**Alt text:** The figure is a faceted line graph titled, 'STEM education grants hit hardest by Trump terminations' and depicts canceled National Science Foundation grants throughout the spring of 2025 by directorate. Canceled grants are measured through a cumulative sum, and are tracked across a month-long time period from April 18 to May 15. The data shows that most directorates saw a slight increase in value of canceled grants, especially at the end of April, these directorates mostly plateaued between \$50 and \$100 million USD in canceled grant value. However, for grants allocated to STEM education organizations or projects, value canceled increased drastically, both at the end of April and the beginning of May, resulting in a cumulative \$900 million USD in grants terminated for this directorate.
-
-::: {.callout-note}
-Alt text also embedded in source code.
-:::
 
 ### Discussion
 
