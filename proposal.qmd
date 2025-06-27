@@ -18,7 +18,8 @@ execute:
   warning: false
 ---
 
-```{r setup}
+```{r}
+#| label: R setup
 
 # install and load packages
 if(!require(pacman))
@@ -33,6 +34,7 @@ devtools::install_github("tidyverse/dsbox")
 ## Dataset
 
 ```{r}
+#| label: Data preparation and cleaning
 
 # Read in dataset
 raw_terminations <- read_csv("data/nsf_terminations_airtable.csv")
@@ -105,7 +107,7 @@ Hypothesis: I expect directorates relating to climate change and STEM research t
 ## Plan of Attack
 
 | Task | Status | Due | Priority | Summary |
-|---------------|---------------|---------------|---------------|---------------|
+|----|----|----|----|----|
 | Finalize proposal for peer review | Completed | 2025-06-13 | High |  |
 | Respond to peer reviews | Completed | 2025-06-18 | Medium | Amended proposal to address issues, closed issues. |
 | Submit for instructor review | In progress | 2025-06-18 | High |  |
