@@ -1,11 +1,11 @@
 ---
-title: "Project Title"
-subtitle: "INFO 526 - Summer 2024 - Final Project"
+title: "Examining Trump's Grant Terminations through Visualizations"
+subtitle: "Project"
 author: 
-  - name: "Team name"
+  - name: "Nathaniel Cross"
     affiliations:
-      - name: "School of Information, University of Arizona"
-description: "Project description"
+      - name: "School of Government and Public Policy, University of Arizona"
+description: "This project examines trends in National Science Foundation research grants terminated under the Trump Administration in 2025 adopting a data visualization approach through the creation and interpretation of unique plots."
 format:
    html:
     code-tools: true
@@ -14,9 +14,181 @@ format:
 editor: visual
 execute:
   warning: false
-  echo: false
 ---
 
 ## Abstract
 
-Add project abstract here.
+Introduction
+
+Q1
+
+Intro, approach, analysis, discussion
+
+Q2 (same as above)
+
+takeaways
+
+```{r}
+#| label: R setup
+#| execute:
+#| echo: false
+
+# Install and load packages
+if(!require(pacman))
+  install.packages("pacman")
+
+pacman::p_load(tidyverse,
+               janitor,
+               lubridate)
+
+devtools::install_github("tidyverse/dsbox")
+
+# Set theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
+
+# Set width of code output
+options(width = 65)
+
+# Set figure parameters for knitr
+knitr::opts_chunk$set(
+  fig.width = 7,        # 7" width
+  fig.asp = 0.618,      # the golden ratio
+  fig.retina = 3,       # dpi multiplier for displaying HTML output on retina
+  fig.align = "center", # center align figures
+  dpi = 300             # higher dpi, sharper image
+)
+```
+
+```{r}
+#| label: General data loading and cleaning
+
+# Read in dataset
+raw_terminations <- read_csv("data/nsf_terminations_airtable.csv")
+
+# Clean data (code sourced from TidyTuesday)
+terminations <- raw_terminations |> 
+  janitor::clean_names() |> 
+  mutate(usaspending_obligated = stringi::stri_replace_first_fixed(usaspending_obligated, "$", "") |> 
+           readr::parse_number()) |> 
+  mutate(grant_number = as.character(grant_number))
+
+# Date analysis
+terminations |>
+  glimpse()
+
+terminations |>
+  ggplot(aes(x = nsf_startdate)) +
+  geom_histogram()
+```
+
+```{r}
+#| label: Question 1 data wrangling
+
+# Collapse total grant terminations by state
+term1 <- terminations |>
+  select(org_state, usaspending_obligated) |>
+  filter(!is.na(usaspending_obligated)) |>
+  group_by(org_state) |>
+  summarise(total_canceled_april182025 = sum(usaspending_obligated, na.rm = TRUE))
+              
+# Double-check for missing values
+sapply(term1, function(x) sum(is.na(x)))
+
+terminations |> select(termination_letter_date) |> distinct()
+```
+
+```{r}
+#| label: Reading and cleaning dataset 2
+
+# Note: this dataset contains all NSF grants, and will be used as a per-state baseline to standardize cancelations
+
+# Read in dataset
+raw_nsfgrants <- read_csv("data/all_awards.csv")
+
+# Clean names
+grants_all <- raw_nsfgrants |>
+  janitor::clean_names() |>
+  rename(org_state = state_code_group)
+
+# Removing characters from numeric field
+grants_all$award_obligation_to_date <- gsub("[$,.]", "", grants_all$award_obligation_to_date)
+
+# Destringing award values
+grants_all$award_obligation_to_date <- as.numeric(as.character(grants_all$award_obligation_to_date))
+
+# Identifying mismatched states
+grants_unique <- grants_all |> select(org_state) |> distinct()
+
+grants_unique |>
+  anti_join(term1, by = "org_state")
+
+# Cleaning dates
+grants_all <- grants_all |> 
+  select(
+    org_state, 
+    effective_start_date, 
+    effective_end_date, 
+    award_obligation_to_date
+    ) |>
+  mutate(
+    effective_start_date = as.Date(effective_start_date, format = "%m/%d/%Y"),
+    effective_end_date = as.Date(effective_end_date, format = "%m/%d/%Y")
+    ) |>
+  filter(effective_start_date >= as.Date("2010-10-01") & 
+         effective_start_date <= as.Date("2024-09-30"))
+
+# Extract start year from date
+grants_all$start_year <- as.numeric(format(grants_all$effective_start_date,'%Y'))
+
+# Filtering out states not present in the terminations dataset
+grants_all <- grants_all |>
+  filter(
+    org_state != "Non States" &
+    org_state != "ON" &
+    org_state != "WY" & 
+    org_state != "GU" & 
+    org_state != "BC"
+    )
+
+# Calculating summary statistics
+grants_all <- grants_all |>
+  group_by(org_state, start_year) |>
+  summarize(total_open_perstateyear = sum(
+    award_obligation_to_date, 
+    na.rm = TRUE)) |>
+  group_by(org_state) |>
+  summarize(total_open_avgperstate = mean(total_open_perstateyear))
+```
+
+```{r}
+#| label: Reading in partisanship df
+
+states_vote <- read_csv("data/states_vote.csv") |>
+  rename(org_state = state) |>
+  mutate(vote_trump = as.logical(vote_trump))
+```
+
+```{r}
+#| label: Final dataset preparation
+
+# Merging datasets
+term1_merged <- term1 |>
+  left_join(grants_all, by = "org_state") |>
+  left_join(states_vote, by = "org_state") |>
+  filter(!is.na(vote_trump))
+
+# Calculating ratio and manipulating based on partisanship
+term1_final <- term1_merged |>
+  mutate(
+    cancel_ratio = total_canceled_april182025 / total_open_avgperstate,
+    cancel_ratio = case_when(
+      vote_trump == 1 ~ -cancel_ratio,
+      TRUE            ~ cancel_ratio
+    )
+  )
+```
+
+```{r}
+#| label: Plotting
+
+```
