@@ -49,9 +49,6 @@ devtools::install_github("tidyverse/dsbox")
 sysfonts::font_add_google(name = "Source Sans 3", family = "Source Sans 3")
 showtext::showtext_auto()
 
-# Set theme for ggplot2
-ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14,base_family = "Source Sans 3"))
-
 # Set width of code output
 options(width = 65)
 ```
@@ -259,23 +256,22 @@ term2_final <- term2_final |>
 ```
 
 ```{r}
-#| label: Set knitr settings
+#| label: Set ggplot settings
 
-# Set figure parameters for knitr
-knitr::opts_chunk$set(
-  fig.align = "center", # center align figures
-  dpi = 300             # higher dpi, sharper image
-)
+# Set theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 20, base_family = "Source Sans 3"))
 ```
 
 ```{r}
 #| label: Question 2 plot
+#| fig-width: 7
+#| fig-height: 14
 #| execute:
 #| echo: true
 #| output: true
-#| fig-width: 7
-#| fig-height: 14
+#| fig-alt: "The figure is a faceted line graph titled, 'STEM education grants hit hardest by Trump terminations' and depicts canceled National Science Foundation grants throughout the spring of 2025 by directorate. Canceled grants are measured through a cumulative sum, and are tracked across a month-long time period from April 18 to May 15. The data shows that most directorates saw a slight increase in value of canceled grants, especially at the end of April, these directorates mostly plateaued between $50 and $100 million USD in canceled grant value. However, for grants allocated to STEM education organizations or projects, value canceled increased drastically, both at the end of April and the beginning of May, resulting in a cumulaitve $900 million USD in grants terminated for this directorate."
 
+# Plot
 term2_final |>
   ggplot(aes(
     x = termination_letter_date, 
@@ -283,13 +279,13 @@ term2_final |>
     color = directorate)) +
   geom_line(linewidth = 1.1) +
   geom_point(size = 2) +
-  facet_wrap(vars(directorate), nrow = 8) +
+  facet_wrap(vars(directorate), nrow = 8, scales = "free") +
   labs(
     y = "Cumulative sum of terminated grants\n(in millions of USD)\n",
     x = NULL,
     title = "STEM education grants hit hardest\nby Trump terminations",
-    subtitle = "Spring 2025",
-    caption = "\nSource: Grant Watch | TidyTuesday"
+    subtitle = "National Science Foundation grants canceled in the spring of 2025, by directorate",
+    caption = "Source: Grant Watch | TidyTuesday"
   ) +
   scale_y_continuous(
     breaks = c(0, 450, 900), 
@@ -304,15 +300,19 @@ term2_final |>
     plot.title.position = "plot",
     plot.margin = margin(t = 1, l = 1.5, b = 1, r = 1, unit = "lines"),
     legend.position = "none",
-    plot.title = element_text(size = 25, face = "bold"),
+    plot.title = element_text(face = "bold", size = 55, lineheight = 0.5),
     axis.text.y = element_text(color = "#4f4f4f"),
     axis.text.x = element_text(color = "#4f4f4f"),
-    axis.title = element_text(color = "black"),
-    plot.caption = element_text(color = "#4f4f4f", size = 10),
+    axis.title = element_text(color = "black", size = 25, lineheight = 0.5),
+    plot.caption = element_text(color = "#4f4f4f")
   )
 ```
 
-**Alt text:**
+**Alt text:** The figure is a faceted line graph titled, 'STEM education grants hit hardest by Trump terminations' and depicts canceled National Science Foundation grants throughout the spring of 2025 by directorate. Canceled grants are measured through a cumulative sum, and are tracked across a month-long time period from April 18 to May 15. The data shows that most directorates saw a slight increase in value of canceled grants, especially at the end of April, these directorates mostly plateaued between \$50 and \$100 million USD in canceled grant value. However, for grants allocated to STEM education organizations or projects, value canceled increased drastically, both at the end of April and the beginning of May, resulting in a cumulative \$900 million USD in grants terminated for this directorate.
+
+::: {.callout-note}
+Alt text also embedded in source code.
+:::
 
 ### Discussion
 
