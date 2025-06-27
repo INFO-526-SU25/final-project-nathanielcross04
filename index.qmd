@@ -31,7 +31,9 @@ pacman::p_load(tidyverse,
                scales,
                sysfonts,
                showtext,
-               see)
+               see,
+               sf,
+               tigris)
 
 devtools::install_github("tidyverse/dsbox")
 
@@ -166,25 +168,37 @@ term2_final |>
     labels = scales::label_dollar()) +
   scale_x_date(
     limits = as.Date(c("2025-04-18", "2025-05-15")),
-    breaks = as.Date(c("2025-04-18", "2025-04-25", "2025-05-02", "2025-05-09", "2025-05-15")),
+    breaks = as.Date(c(
+      "2025-04-18", 
+      "2025-04-25", 
+      "2025-05-02", 
+      "2025-05-09", 
+      "2025-05-15")),
     date_labels = "%B %d") +
   scale_color_okabeito(order = 1:8, reverse = TRUE) +
   theme(
     plot.title.position = "plot",
     plot.margin = margin(t = 1, l = 1.5, b = 1, r = 1, unit = "lines"),
     legend.position = "none",
-    plot.title = element_text(face = "bold", size = 55, lineheight = 0.5),
+    plot.title = element_text(
+      face = "bold", 
+      size = 55, 
+      lineheight = 0.5),
     axis.text.y = element_text(color = "#4f4f4f"),
     axis.text.x = element_text(color = "#4f4f4f"),
-    axis.title = element_text(color = "black", size = 25, lineheight = 0.5),
-    plot.caption = element_text(color = "#4f4f4f")
+    axis.title = element_text(
+      color = "black", 
+      size = 25, 
+      lineheight = 0.5),
+    plot.caption = element_text(color = "#4f4f4f"),
+    plot.subtitle = element_text(color = "#4f4f4f", size = 25)
   )
 ```
 
 **Alt text:** The figure is a faceted line graph titled, 'STEM education grants hit hardest by Trump terminations' and depicts canceled National Science Foundation grants throughout the spring of 2025 by directorate. Canceled grants are measured through a cumulative sum, and are tracked across a month-long time period from April 18 to May 15. The data shows that most directorates saw a slight increase in value of canceled grants, especially at the end of April, these directorates mostly plateaued between \$50 and \$100 million USD in canceled grant value. However, for grants allocated to STEM education organizations or projects, value canceled increased drastically, both at the end of April and the beginning of May, resulting in a cumulative \$900 million USD in grants terminated for this directorate.
 
 ::: callout-note
-Alt text also embedded in source code for enhanced screen-reading capacity.
+Alt text also embedded in source code for enhanced screen-reading capability.
 :::
 
 ### Discussion
@@ -300,23 +314,71 @@ term1_final <- term1_merged |>
     cancel_ratio = case_when(
       vote_trump == 1 ~ -cancel_ratio,
       TRUE            ~ cancel_ratio
-    )
+    ),
+    cancel_ratio_perc = cancel_ratio * 100
   )
+
+# Set tigris options
+options(tigris_class = "sf")
+
+# Loading in data
+states <- states(cb = TRUE, resolution = "20m") |>
+  filter(NAME != "Puerto Rico")
+
+# Shifting AK and HI closer to the continent and resizing
+states_shifted <- shift_geometry(states)
+
+# Merging grant terminations onto base map
+term_map <- states_shifted |>
+  left_join(term1_final, by = c("STUSPS" = "org_state"), multiple = "all") |>
+  replace_na(list(cancel_ratio_perc = 0))
+# Note: only na was Wyoming, and was due to the fact that no grants in this state were canceled.
 ```
 
 ```{r}
-#| label: Question 2 plot
+#| label: Reset parameters and theme for plot
+
+# Set theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_void(base_size = 20, base_family = "Source Sans 3"))
+```
+
+```{r}
+#| label: Question 2 map plot
+#| fig-width: 7
+#| fig-asp: 0.618
 #| execute:
 #| echo: true
 #| output: true
 #| fig-alt: "XXX"
 
-
-
-
-
-
-
+# Plot
+term_map |>
+  ggplot()+
+    geom_sf(aes(fill = cancel_ratio_perc), color = "black") +
+    labs(
+      title = "Massachusetts, Arkansas, and Alabama\nlost greatest proportions of grant funding\nin Trump terminations",
+      subtitle = "Severity of terminated National Science Foundation grants, by state and partisanship",
+      fill = "Proportion of terminated\ngrants relative to\nannual average allocation",
+    ) +
+    scale_fill_gradient2(
+      low = "#BB1C1C", 
+      mid = "white", 
+      high = "#0072B2", 
+    labels = function(x) 
+      label_number(suffix = "%", accuracy = 0.1)
+      (abs(x)),
+      limits = c(-0.8, 0.8)
+      ) +
+    guides(fill = guide_colorbar(ticks.colour = NA)) +
+    theme(plot.title.position = "plot",
+          plot.title = element_text(
+            face = "bold", 
+            size = 45, 
+            lineheight = 0.5),
+          legend.title = element_text(lineheight = 0.5, color = "#4f4f4f"),
+          legend.text = element_text(color = "#4f4f4f"),
+          plot.subtitle = element_text(color = "#4f4f4f", size = 25)
+    )
 ```
 
 ### Discussion
