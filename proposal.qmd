@@ -1,5 +1,5 @@
 ---
-title: "Examining Trump's Grant Terminations through Visualizations"
+title: "Who Bears the Brunt? Visualizing the Areas Most Impacted by Trump's Grant Cuts"
 subtitle: "Proposal"
 author: 
   - name: "Nathaniel Cross"
@@ -72,13 +72,13 @@ I chose this dataset for two primary reasons: the first is that as a student in 
 
 ## Questions
 
-**1. Which scientific domains saw the highest termination rates?**
+**1. Which scientific domains saw the highest grant termination rates?**
 
 This question uses directorates to compare the dollar value of terminated grants over time. NSF directorates are the highest levels of administrative organizations administering grants. Examples include STEM Education and Social, Behavioral, and Economic Sciences.
 
-Hypothesis: I expect directorates relating to climate change and STEM research to be most affected at the outset of the cancellations.
+Hypothesis: I expect directorates relating to STEM research to be most affected at the outset of the cancellations.
 
-**2. Were terminations clustered by geography or institution type?**
+**2. Were grant terminations clustered by geography or motivated by states' political leanings?**
 
 This question attempts to analyze how the quantity of grants terminated varies by state, and will superimpose state partisanship to understand how heterogeneity in terminated grants is impacted by this variable.
 
@@ -107,13 +107,13 @@ Hypothesis: I expect Democrat-leaning states may have more grants canceled due t
 ## Plan of Attack
 
 | Task | Status | Due | Priority | Summary |
-|----|----|----|----|----|
+|---------------|---------------|---------------|---------------|---------------|
 | Finalize proposal for peer review | Completed | 2025-06-13 | High |  |
 | Respond to peer reviews | Completed | 2025-06-18 | Medium | Amended proposal to address issues, closed issues. |
-| Submit for instructor review | In progress | 2025-06-18 | High |  |
-| Question 1 plotting | In progress | 2025-07-02 | High | Personal deadline: 2025-06-26 |
-| Question 2 plotting | In progress | 2025-07-02 | High | Personal deadline: 2025-06-26 |
-| Write-up | Not started | 2025-07-02 | Low | Personal deadline: 2025-06-28 |
+| Submit for instructor review | Completed | 2025-06-18 | High |  |
+| Question 1 plotting | Completed | 2025-07-02 | High | Personal deadline: 2025-06-26 |
+| Question 2 plotting | Completed | 2025-07-02 | High | Personal deadline: 2025-06-26 |
+| Write-up | In progress | 2025-07-02 | Low | Personal deadline: 2025-06-28 |
 | Presentation | Not started | 2025-07-02 | Low | Personal deadline: 2025-06-28 |
 | Revision | Not started | 2025-07-02 | Low | Personal deadline: 2025-06-29 |
 | Final .qmd publication | Not started | 2025-07-02 | Low | Personal deadline: 2025-06-29 |
