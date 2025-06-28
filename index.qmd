@@ -1,5 +1,5 @@
 ---
-title: "Examining Trump's Grant Terminations through Visualizations"
+title: "Who Bears the Brunt? Visualizing the Areas Most Impacted by Trump's Grant Cuts"
 subtitle: "Project"
 author: 
   - name: "Nathaniel Cross"
