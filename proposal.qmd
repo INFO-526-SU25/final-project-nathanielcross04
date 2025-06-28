@@ -107,7 +107,7 @@ Hypothesis: I expect Democrat-leaning states may have more grants canceled due t
 ## Plan of Attack
 
 | Task | Status | Due | Priority | Summary |
-|---------------|---------------|---------------|---------------|---------------|
+|----|----|----|----|----|
 | Finalize proposal for peer review | Completed | 2025-06-13 | High |  |
 | Respond to peer reviews | Completed | 2025-06-18 | Medium | Amended proposal to address issues, closed issues. |
 | Submit for instructor review | Completed | 2025-06-18 | High |  |

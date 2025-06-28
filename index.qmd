@@ -56,7 +56,14 @@ terminations <- raw_terminations |>
   janitor::clean_names() |> 
   mutate(usaspending_obligated = stringi::stri_replace_first_fixed(usaspending_obligated, "$", "") |> 
            readr::parse_number()) |> 
-  mutate(grant_number = as.character(grant_number))
+  mutate(grant_number = as.character(grant_number)) |>
+  select(
+    termination_letter_date, 
+    directorate, 
+    usaspending_obligated,
+    org_state, 
+    nsf_startdate
+    )
 
 # Date analysis
 terminations |>
