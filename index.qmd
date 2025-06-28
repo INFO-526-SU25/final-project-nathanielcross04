@@ -160,7 +160,6 @@ term2_final |>
     x = NULL,
     title = "Trump grant terminations hit\nSTEM education initiatives hardest",
     subtitle = "National Science Foundation grants canceled in the spring of 2025, by directorate",
-    caption = "Source: Grant Watch | TidyTuesday"
   ) +
   scale_y_continuous(
     breaks = c(0, 450, 900), 
@@ -190,7 +189,6 @@ term2_final |>
       color = "black", 
       size = 25, 
       lineheight = 0.5),
-    plot.caption = element_text(color = "#4f4f4f"),
     plot.subtitle = element_text(color = "#4f4f4f", size = 25)
   )
 ```
@@ -349,37 +347,46 @@ ggplot2::theme_set(ggplot2::theme_void(base_size = 20, base_family = "Source San
 #| execute:
 #| echo: true
 #| output: true
-#| fig-alt: "XXX"
+#| fig-alt: "The figure is a chloropleth titled, 'Massachusetts, Arkansas, and Alabama lost greatest proportions of grant funding in Trump terminations' and depicts the severity of National Science Foundation grant terminations by state and state partisanship. All fifty U.S. states are pictured, and states' fill is mapped to both partisanship and grant terminations. Terminations are calculated as a proportion of value of grants terminated to average annual allocation to each state. Arkansas and Alabama are the two Republican states to suffer the worst from terminations, with canceled value around 0.6% of average annual allocations. Contrastingly, Massachusetts is the Democratic state most affected by the cancellations, with a ratio of around 0.8%."
 
 # Plot
 term_map |>
   ggplot()+
-    geom_sf(aes(fill = cancel_ratio_perc), color = "black") +
-    labs(
-      title = "Massachusetts, Arkansas, and Alabama\nlost greatest proportions of grant funding\nin Trump terminations",
-      subtitle = "Severity of terminated National Science Foundation grants, by state and partisanship",
-      fill = "Proportion of terminated\ngrants relative to\nannual average allocation",
-    ) +
-    scale_fill_gradient2(
-      low = "#BB1C1C", 
-      mid = "white", 
-      high = "#0072B2", 
-    labels = function(x) 
-      label_number(suffix = "%", accuracy = 0.1)
-      (abs(x)),
-      limits = c(-0.8, 0.8)
+  geom_sf(aes(fill = cancel_ratio_perc), color = "black") +
+  coord_sf(clip = "off") +
+  labs(
+    title = "Massachusetts, Arkansas, and Alabama\nlost greatest proportions of grant funding\nin Trump terminations",
+    subtitle = "Severity of  National Science Foundation grant terminations, by partisanship",
+    fill = "Proportion of terminated\ngrants relative to\naverage annual allocation\n(diverging on state partisanship)",
       ) +
-    guides(fill = guide_colorbar(ticks.colour = NA)) +
-    theme(plot.title.position = "plot",
-          plot.title = element_text(
-            face = "bold", 
-            size = 45, 
-            lineheight = 0.5),
-          legend.title = element_text(lineheight = 0.5, color = "#4f4f4f"),
-          legend.text = element_text(color = "#4f4f4f"),
-          plot.subtitle = element_text(color = "#4f4f4f", size = 25)
-    )
+  scale_fill_gradient2(
+    low = "#BB1C1C", 
+    mid = "white", 
+    high = "#0072B2", 
+  labels = function(x) 
+    label_number(suffix = "%", accuracy = 0.1)
+    (abs(x)),
+    limits = c(-0.8, 0.8)
+    ) +
+  guides(fill = guide_colorbar(ticks.colour = NA)) +
+  theme(plot.title.position = "plot",
+        plot.title = element_text(
+         face = "bold", 
+         size = 45, 
+         lineheight = 0.5),
+        legend.title = element_text(
+          lineheight = 0.5, 
+          color = "#4f4f4f"),
+        legend.text = element_text(color = "#4f4f4f"),
+        plot.subtitle = element_text(color = "#4f4f4f", size = 25),
+       )
 ```
+
+**Alt text:** The figure is a chloropleth titled, 'Massachusetts, Arkansas, and Alabama lost greatest proportions of grant funding in Trump terminations' and depicts the severity of National Science Foundation grant terminations by state and state partisanship. All fifty U.S. states are pictured, and states' fill is mapped to both partisanship and grant terminations. Terminations are calculated as a proportion of value of grants terminated to average annual allocation to each state. Arkansas and Alabama are the two Republican states to suffer the worst from terminations, with canceled value around 0.6% of average annual allocations. Contrastingly, Massachusetts is the Democratic state most affected by the cancellations, with a ratio of around 0.8%.
+
+::: callout-note
+Alt text also embedded in source code for enhanced screen-reading capability.
+:::
 
 ### Discussion
 
