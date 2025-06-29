@@ -78,6 +78,16 @@ terminations |>
 
 ## General Introduction
 
+This project examines trends in National Science Foundation grant terminations induced by the Trump Administration. More specifically, designed visualizations attempt to understand who is most impacted by these terminations, including the scientific domains and geographic entities most impacted. The visualizations use data from the primary dataset, National Science Foundation Grant Terminations. The NSF Grant Terminations dataset yields from Grant Watch, an independent project whose goal is to track the termination of scientific research grants under the Trump Administration's second term (beginning in 2025). Data is sourced largely by submissions from affected investigators and researchers at institutions across the United States, as well as from user-submitted lists of terminated grants, all of which are corroborated via the NSF's Award Search function and USAspending.gov. The dataset tracks individual grant terminations, and includes information on the organization receiving the grant, date of termination, and value terminated. The time frame spans from April 18 to May 15. 
+
+Two supplementary datasets are also utilized to respond to Question 2, as later explained. First, the National Science Foundation Grants dataset, which is derived from NSF by the Numbers. This is the National Science Foundation's statistics and database portal, and includes information on funding information for grant awards, funded institutions and organizations, proposals for funding, and obligated spending per year since fiscal year 2011. Second, the State Partisanship dataset, which is adopted from the CNN Politics' reporting on the 2024 presidential election and details the candidate who won the electoral votes of each state.
+
+::: callout-note
+## Data note
+
+For more information on the derivation of these datasets and their included variables, please see the respective folder in the GitHub repository.
+:::
+
 ## Question 1
 
 **Which scientific domains saw the highest grant termination rates, and how do these terminations vary over time?**
