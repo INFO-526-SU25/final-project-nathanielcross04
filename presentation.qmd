@@ -1,165 +1,652 @@
 ---
-title: "Project title"
-subtitle: "INFO 526 - Summer 2024 - Final Project"
-author: "Author names"
+title: "Who Bears the Brunt?"
+subtitle: "Visualizing the Areas Most Impacted by Trump's Grant Cuts"
+author: "Nathaniel Cross"
 title-slide-attributes:
-  data-background-image: images/watercolour_sys02_img34_teacup-ocean.jpg
   data-background-size: stretch
   data-background-opacity: "0.7"
   data-slide-number: none
 format:
   revealjs:
-    theme:  ['data/customtheming.scss']
-  
+    theme: dark
+    smaller: true
+    scrollable: true
+    incremental: true
 editor: visual
 execute:
   echo: false
 ---
 
 ```{r}
-#| label: load-packages
+#| label: Load packages
 #| include: false
 
-# Load packages here
-pacman::p_load(tidymodels,
-               tidyverse)
+#     theme:  ['data/customtheming.scss']
 
+
+# Install and load packages
+if(!require(pacman))
+  install.packages("pacman")
+
+pacman::p_load(tidyverse,
+               janitor,
+               lubridate,
+               scales,
+               sysfonts,
+               showtext,
+               see,
+               sf,
+               tigris)
+
+devtools::install_github("tidyverse/dsbox")
+
+# Import and load fonts
+sysfonts::font_add_google(name = "Source Sans 3", family = "Source Sans 3")
+showtext::showtext_auto()
 ```
 
 ```{r}
-#| label: setup
+#| label: Setting up ggplot
 #| include: false
 
 # Plot theme
-ggplot2::theme_set(ggplot2::theme_minimal(base_size = 11))
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 11, base_family = "Source Sans 3"))
+```
 
-# For better figure resolution
-knitr::opts_chunk$set(
-  fig.retina = 3, 
-  dpi = 300, 
-  fig.width = 6, 
-  fig.asp = 0.618 
+```{r}
+#| label: General data loading and cleaning
+#| include: false
+
+# Read in dataset
+raw_terminations <- read_csv("data/nsf_terminations_airtable.csv")
+
+# Clean data (code sourced from TidyTuesday)
+terminations <- raw_terminations |> 
+  janitor::clean_names() |> 
+  mutate(usaspending_obligated = stringi::stri_replace_first_fixed(usaspending_obligated, "$", "") |> 
+           readr::parse_number()) |> 
+  mutate(grant_number = as.character(grant_number)) |>
+  select(
+    termination_letter_date, 
+    directorate, 
+    usaspending_obligated,
+    org_state, 
+    nsf_startdate
+    )
+```
+
+```{r}
+#| label: Data wrangling for question 1
+#| include: false
+
+# Subsetting data and filtering out NAs
+term2 <- terminations |>
+  select(
+    termination_letter_date, 
+    directorate, 
+    usaspending_obligated
+    ) |>
+  filter(!if_any(everything(), is.na))
+
+# Distinct directorates
+term2 |> select(directorate) |> distinct()
+
+# Filtering out unneeded directorates
+term2 <- term2 |>
+  filter(directorate != "Office of the Director") 
+
+# Cleaning directorate names
+term2 <- term2 |>
+  mutate(directorate = str_remove_all(term2$directorate, "\""))
+
+# Summarize data
+term2_final <- term2 |>
+  group_by(directorate, termination_letter_date) |>
+  summarize(cancel_grant = sum(usaspending_obligated), .groups = "drop") |>
+  arrange(directorate, termination_letter_date) |>
+  group_by(directorate) |>
+  mutate(cum_cancel_grant = cumsum(cancel_grant),
+         cum_cancel_grant_millions = cum_cancel_grant / 1000000
+         )
+
+# Converting directorate to factor
+term2_final$directorate = as.factor(as.character(term2_final$directorate))
+
+term2_final <- term2_final |>
+  mutate(directorate = fct_rev(fct_relevel( 
+           directorate,
+           "STEM Education",
+           "Mathematical and Physical Sciences",
+           "Social, Behavioral and Economic Sciences",
+           "Technology, Innovation and Partnerships",
+           "Geosciences",
+           "Computer and Information Science and Engineering",
+           "Biological Sciences",
+           "Engineering"
+           ))
   )
 ```
 
 ```{r}
-#| label: load-data
+#| label: Question 1 data wrangling for raw count
 #| include: false
-# Load data here
-data(mtcars)
-mtcars$speed <- mtcars$hp / mtcars$wt
 
-data("penguins")
+# Summarize data
+term2_final_count <- term2 |>
+  group_by(directorate, termination_letter_date) |>
+  summarize(cancel_grant_quant = n(), .groups = "drop") |>
+  arrange(directorate, termination_letter_date) |>
+  group_by(directorate) |>
+  mutate(cum_cancel_grant_quant = cumsum(cancel_grant_quant))
+
+# Converting directorate to factor
+term2_final_count$directorate = as.factor(as.character(term2_final_count$directorate))
+
+term2_final_count <- term2_final_count |>
+  mutate(directorate = fct_rev(fct_relevel( 
+           directorate,
+           "STEM Education",
+           "Mathematical and Physical Sciences",
+           "Social, Behavioral and Economic Sciences",
+           "Technology, Innovation and Partnerships",
+           "Geosciences",
+           "Computer and Information Science and Engineering",
+           "Biological Sciences",
+           "Engineering"
+           ))
+  )
 ```
-
-# Using Quarto for presentations
-
-## Quarto
-
--   The presentation is created using the Quarto CLI
-
--   `##` sets the start of a new slide
-
-## Layouts
-
-You can use plain text
-
-::: columns
-::: {.column width="40%"}
--   or bullet points[^1]
-:::
-
-::: {.column width="60%"}
-or in two columns
-:::
-:::
-
-[^1]: And add footnotes
-
--   like
-
--   this
-
-## Code
-
-```{r, echo=FALSE}
-model <- lm(mpg ~ speed, data = mtcars) 
-
-model |> tidy()
-
-model |> glance()
-
-```
-
-## Plots
 
 ```{r}
-penguins |>
-  mutate(species = ifelse(species == "Adelie", "Adelie", "Other")) |>
-  ggplot(aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
-  geom_point()
+#| label: Question 2 data wrangling
+#| include: false
+
+# Collapse total grant terminations by state
+term1 <- terminations |>
+  select(org_state, usaspending_obligated) |>
+  filter(!is.na(usaspending_obligated)) |>
+  group_by(org_state) |>
+  summarise(total_canceled_april182025 = sum(usaspending_obligated, na.rm = TRUE))
 ```
-
-## Plot and text
-
-::: columns
-::: {.column width="50%"}
--   Some text
-
--   goes here
-:::
-
-::: {.column width="50%"}
-```{r, warning=FALSE, fig.width=5.5}
-penguins |>
-  ggplot(aes(x = bill_length_mm, y = species, color = species)) +
-  geom_boxplot(linewidth = 0.75,
-               outlier.size = 2.5) +
-  theme_minimal(base_size = 15) +
-  theme(legend.key.size = unit(0.8, "cm"))
-```
-:::
-:::
-
-# A new section...
-
-## Tables
-
-If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
 
 ```{r}
-penguins |> 
-  head() |>
-  kableExtra::kable() |>
-  kableExtra::kable_styling()
+#| label: Reading and cleaning dataset 2
+#| include: false
+
+# Note: this dataset contains all NSF grants, and will be used as a per-state baseline to standardize cancelations
+
+# Read in dataset
+raw_nsfgrants <- read_csv("data/all_awards.csv")
+
+# Clean names
+grants_all <- raw_nsfgrants |>
+  janitor::clean_names() |>
+  rename(org_state = state_code_group)
+
+# Removing characters from numeric field
+grants_all$award_obligation_to_date <- gsub("[$,.]", "", grants_all$award_obligation_to_date)
+
+# Destringing award values
+grants_all$award_obligation_to_date <- as.numeric(as.character(grants_all$award_obligation_to_date))
+
+# Identifying mismatched states
+grants_unique <- grants_all |> select(org_state) |> distinct()
+
+grants_unique |>
+  anti_join(term1, by = "org_state")
+
+# Cleaning dates
+grants_all <- grants_all |> 
+  select(
+    org_state, 
+    effective_start_date, 
+    effective_end_date, 
+    award_obligation_to_date
+    ) |>
+  mutate(
+    effective_start_date = as.Date(effective_start_date, format = "%m/%d/%Y"),
+    effective_end_date = as.Date(effective_end_date, format = "%m/%d/%Y")
+    ) |>
+  filter(effective_start_date >= as.Date("2010-10-01") & 
+         effective_start_date <= as.Date("2024-09-30"))
+
+# Extract start year from date
+grants_all$start_year <- as.numeric(format(grants_all$effective_start_date,'%Y'))
+
+# Filtering out states not present in the terminations dataset
+grants_all <- grants_all |>
+  filter(
+    org_state != "Non States" &
+    org_state != "ON" &
+    org_state != "WY" & 
+    org_state != "GU" & 
+    org_state != "BC"
+    )
+
+# Calculating summary statistics
+grants_all <- grants_all |>
+  group_by(org_state, start_year) |>
+  summarize(total_open_perstateyear = sum(
+    award_obligation_to_date, 
+    na.rm = TRUE)) |>
+  group_by(org_state) |>
+  summarize(total_open_avgperstate = mean(total_open_perstateyear))
 ```
 
-## Images
+```{r}
+#| label: Reading in partisanship df
+#| include: false
 
-![Image credit: Danielle Navarro, Percolate.](images/watercolour_sys02_img34_teacup-ocean.png){fig-align="center" width="500"}
-
-## Math Expressions {.smaller}
-
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. \$\\alpha+\\beta\$ renders $\alpha + \beta$. You can use the display style with double dollar signs:
-
-```         
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
+states_vote <- read_csv("data/states_vote.csv") |>
+  rename(org_state = state) |>
+  mutate(vote_trump = as.logical(vote_trump))
 ```
 
-$$
-\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i
-$$
+```{r}
+#| label: Final dataset preparation
+#| include: false
 
-Limitations:
+# Merging datasets
+term1_merged <- term1 |>
+  left_join(grants_all, by = "org_state") |>
+  left_join(states_vote, by = "org_state") |>
+  filter(!is.na(vote_trump))
 
-1.  The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
+# Calculating ratio and manipulating based on partisanship
+term1_final <- term1_merged |>
+  mutate(
+    cancel_ratio = total_canceled_april182025 / total_open_avgperstate,
+    cancel_ratio = case_when(
+      vote_trump == 1 ~ -cancel_ratio,
+      TRUE            ~ cancel_ratio
+    ),
+    cancel_ratio_perc = cancel_ratio * 100
+  )
 
-2.  There should not be spaces after the opening `$` or before the closing `$`.
+# Set tigris options
+options(tigris_class = "sf")
 
-# Wrap up
+# Loading in data
+states <- states(cb = TRUE, resolution = "20m") |>
+  filter(NAME != "Puerto Rico")
 
-## Feeling adventurous?
+# Shifting AK and HI closer to the continent and resizing
+states_shifted <- shift_geometry(states)
+states_shifted <- st_transform(states_shifted, crs = 4326)
 
--   You are welcomed to use the default styling of the slides. In fact, that's what I expect majority of you will do. You will differentiate yourself with the content of your presentation.
+# Merging grant terminations onto base map
+term_map <- states_shifted |>
+  left_join(term1_final, by = c("STUSPS" = "org_state"), multiple = "all") |>
+  replace_na(list(cancel_ratio_perc = 0))
+# Note: only na was Wyoming, and was due to the fact that no grants in this state were canceled.
+```
 
--   But some of you might want to play around with slide styling. Some solutions for this can be found at https://quarto.org/docs/presentations/revealjs.
+## Introduction
+
+-   Examination of grants terminated by the Trump Administration
+
+-   Visualizations help understand who is most impacted by these terminations
+
+    -   Scientific domains
+
+    -   Geographic entities
+
+-   Tracks grants housed under the National Science Foundation
+
+## National Science Foundation Grant Terminations
+
+-   Derived from Grant Watch
+
+    -   Independent project tracking the termination of scientific research grants under the Trump Administration's second term
+
+    -   Data is sourced largely by submissions from affected investigators
+
+    -   Tracks individual grant terminations, and includes information on the organization receiving the grant, date of termination, and value terminated
+
+    -   Time frame spans from April 18 to May 15
+
+-   Supplementary data from the National Science Foundation and CNN Politics
+
+## Question 1
+
+**Which scientific domains saw the highest grant termination rates, and how do these terminations vary over time?**
+
+::::: columns
+::: {.column width="50%"}
+Introduction
+
+-   With a wide impacts of grant terminations, I wanted to explore which scientific domains have been the most impacted
+
+-   Local impacts here at the University of Arizona
+
+-   NSF is divided into directorates, administrative units that manage grants in certain fields
+:::
+
+::: {.column width="50%"}
+Approach
+
+-   Faceted line plots to best represent time-series data and differences between directorates
+
+-   Use of cumulative summations to depict total grant terminations
+
+-   For reference, both dollar value and quantity are plotted in the project
+:::
+:::::
+
+------------------------------------------------------------------------
+
+::: panel-tabset
+## Introductory subset
+
+```{r}
+#| label: Question 1 plot code subsetted
+#| execute:
+#| echo: false
+
+# Plot
+term2_final |>
+  filter(directorate == "Engineering") |>
+  ggplot(aes(
+    x = termination_letter_date, 
+    y = cum_cancel_grant_millions, 
+    color = directorate)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  facet_wrap(vars(directorate), nrow = 4, scales = "free") +
+  labs(
+    y = "Cumulative sum of terminated grants\n(in millions of USD)\n",
+    x = NULL,
+    title = "Trump grant terminations hit\nSTEM education initiatives hardest",
+    subtitle = "National Science Foundation grants canceled in the spring of 2025, by directorate",
+  ) +
+  scale_y_continuous(
+    breaks = c(0, 450, 900), 
+    limits = c(0, 900),
+    labels = scales::label_dollar()) +
+  scale_x_date(
+    limits = as.Date(c("2025-04-18", "2025-05-15")),
+    breaks = as.Date(c(
+      "2025-04-18", 
+      "2025-04-25", 
+      "2025-05-02", 
+      "2025-05-09", 
+      "2025-05-15")),
+    date_labels = "%B %d") +
+  scale_color_okabeito(order = 1:8, reverse = TRUE) +
+  theme(
+    plot.title.position = "plot",
+    plot.margin = margin(t = 1, l = 1.5, b = 1, r = 1, unit = "lines"),
+    legend.position = "none",
+    plot.title = element_text(
+      face = "bold", 
+      size = 55, 
+      lineheight = 0.5),
+    strip.text = element_text(size = 20),
+    axis.text.y = element_text(color = "#4f4f4f", size = 20),
+    axis.text.x = element_text(color = "#4f4f4f", size = 20),
+    axis.title = element_text(
+      color = "black", 
+      size = 25, 
+      lineheight = 0.5),
+    plot.subtitle = element_text(color = "#4f4f4f", size = 25)
+  )
+```
+
+## Plot
+
+```{r}
+#| label: Question 1 plot code
+#| execute:
+#| echo: false
+
+# Plot
+term2_final |>
+  ggplot(aes(
+    x = termination_letter_date, 
+    y = cum_cancel_grant_millions, 
+    color = directorate)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  facet_wrap(vars(directorate), nrow = 4, scales = "free") +
+  labs(
+    y = "Cumulative sum of terminated grants\n(in millions of USD)\n",
+    x = NULL,
+    title = "Trump grant terminations hit\nSTEM education initiatives hardest",
+    subtitle = "National Science Foundation grants canceled in the spring of 2025, by directorate",
+  ) +
+  scale_y_continuous(
+    breaks = c(0, 900), 
+    limits = c(0, 900),
+    labels = scales::label_dollar()) +
+  scale_x_date(
+    limits = as.Date(c("2025-04-18", "2025-05-15")),
+    breaks = as.Date(c(
+      "2025-04-18", 
+      "2025-04-25", 
+      "2025-05-02", 
+      "2025-05-09", 
+      "2025-05-15")),
+    date_labels = "%B %d") +
+  scale_color_okabeito(order = 1:8, reverse = TRUE) +
+  theme(
+    plot.title.position = "plot",
+    plot.margin = margin(t = 1, l = 1.5, b = 1, r = 1, unit = "lines"),
+    legend.position = "none",
+    plot.title = element_text(
+      face = "bold", 
+      size = 55, 
+      lineheight = 0.5),
+    strip.text = element_text(size = 20),
+    axis.text.y = element_text(color = "#4f4f4f", size = 20),
+    axis.text.x = element_text(color = "#4f4f4f", size = 20),
+    axis.title = element_text(
+      color = "black", 
+      size = 25, 
+      lineheight = 0.5),
+    plot.subtitle = element_text(color = "#4f4f4f", size = 25)
+  )
+```
+
+## STEM Education subset
+
+```{r}
+#| label: Question 1 plot code STEM subset
+#| execute:
+#| echo: false
+
+# Plot
+term2_final |>
+  filter(directorate == "STEM Education") |>
+  ggplot(aes(
+    x = termination_letter_date, 
+    y = cum_cancel_grant_millions, 
+    color = directorate)) +
+  geom_line(linewidth = 1.1, color = "#E69F00") +
+  geom_point(size = 2, color = "#E69F00") +
+  facet_wrap(vars(directorate), nrow = 4, scales = "free") +
+  labs(
+    y = "Cumulative sum of terminated grants\n(in millions of USD)\n",
+    x = NULL,
+    title = "Trump grant terminations hit\nSTEM education initiatives hardest",
+    subtitle = "National Science Foundation grants canceled in the spring of 2025, by directorate",
+  ) +
+  scale_y_continuous(
+    breaks = c(0, 450, 900), 
+    limits = c(0, 900),
+    labels = scales::label_dollar()) +
+  scale_x_date(
+    limits = as.Date(c("2025-04-18", "2025-05-15")),
+    breaks = as.Date(c(
+      "2025-04-18", 
+      "2025-04-25", 
+      "2025-05-02", 
+      "2025-05-09", 
+      "2025-05-15")),
+    date_labels = "%B %d") +
+  theme(
+    plot.title.position = "plot",
+    plot.margin = margin(t = 1, l = 1.5, b = 1, r = 1, unit = "lines"),
+    legend.position = "none",
+    plot.title = element_text(
+      face = "bold", 
+      size = 55, 
+      lineheight = 0.5),
+    strip.text = element_text(size = 20),
+    axis.text.y = element_text(color = "#4f4f4f", size = 20),
+    axis.text.x = element_text(color = "#4f4f4f", size = 20),
+    axis.title = element_text(
+      color = "black", 
+      size = 25, 
+      lineheight = 0.5),
+    plot.subtitle = element_text(color = "#4f4f4f", size = 25)
+  )
+```
+:::
+
+## Question 2
+
+**Were grant terminations clustered by geography or motivated by states' political leanings?**
+
+::::: columns
+::: {.column width="50%"}
+Introduction
+
+-   Motivated by variation in state and federal policy, especially in how states implement policy
+
+-   Era of record high interstate and partisan polarization
+
+-   Map plots are cool :)
+:::
+
+::: {.column width="50%"}
+Approach
+
+-   Color-mapped choropleth
+
+    -   Hue mapped to states' partisanship
+
+    -   Value mapped to grant terminations
+
+-   Grant terminations measured in dollar value as a proportion of average annual grant allocation through the NSF to standardize differences between states
+
+-   Partisanship measured through proxy of 2024 presidential election results
+:::
+:::::
+
+------------------------------------------------------------------------
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| label: Question 2 map plot all US
+#| execute:
+#| echo: false
+
+# Plot
+term_map |>
+  ggplot()+
+  geom_sf(aes(fill = cancel_ratio_perc), color = "black") +
+  coord_sf(clip = "off") +
+  labs(
+    title = "Massachusetts and D.C.lost greatest proportions\nof grant funding in Trump terminations",
+    subtitle = "Severity of  National Science Foundation grant terminations, by partisanship",
+    fill = "Proportion of terminated\ngrants relative to\naverage annual allocation\n(diverging on state partisanship)\n",
+      ) +
+  scale_fill_gradient2(
+    low = "#BB1C1C", 
+    mid = "white", 
+    high = "#0072B2", 
+  labels = function(x) 
+    label_number(suffix = "%", accuracy = 0.1)
+    (abs(x)),
+    limits = c(-0.8, 0.8)
+    ) +
+  guides(fill = guide_colorbar(ticks.colour = NA)) +
+  theme(plot.title.position = "plot",
+        plot.title = element_text(
+         face = "bold", 
+         size = 45, 
+         lineheight = 0.5),
+        legend.title = element_text(
+          lineheight = 0.5, 
+          color = "#4f4f4f",
+          size = 20),
+        legend.text = element_text(color = "#4f4f4f", size = 20),
+        plot.subtitle = element_text(color = "#4f4f4f", size = 25),
+       )
+```
+
+## Northeast detail
+
+```{r}
+#| label: Q2 plot NE
+#| execute:
+#| echo: false
+
+# Plot
+term_map |>
+  ggplot()+
+  geom_sf(aes(fill = cancel_ratio_perc), color = "black") +
+  coord_sf(xlim = c(-79, -69), ylim = c(37, 44), expand = TRUE) +
+  labs(
+    title = "Massachusetts and D.C.lost greatest proportions\nof grant funding in Trump terminations",
+    subtitle = "Severity of  National Science Foundation grant terminations, by partisanship",
+    fill = "Proportion of terminated\ngrants relative to\naverage annual allocation\n(diverging on state partisanship)\n",
+      ) +
+  scale_fill_gradient2(
+    low = "#BB1C1C", 
+    mid = "white", 
+    high = "#0072B2", 
+  labels = function(x) 
+    label_number(suffix = "%", accuracy = 0.1)
+    (abs(x)),
+    limits = c(-0.8, 0.8)
+    ) +
+  guides(fill = guide_colorbar(ticks.colour = NA)) +
+  theme(plot.title.position = "plot",
+        plot.title = element_text(
+         face = "bold", 
+         size = 45, 
+         lineheight = 0.5),
+        legend.title = element_text(
+          lineheight = 0.5, 
+          color = "#4f4f4f",
+          size = 20),
+        legend.text = element_text(color = "#4f4f4f", size = 20),
+        plot.subtitle = element_text(color = "#4f4f4f", size = 25),
+       )
+```
+:::
+
+## Conclusion
+
+::::: columns
+::: {.column width="50%"}
+-   Many losers, no winners
+
+-   Universities and research institutions everywhere impacted
+
+    -   Especially in states like Massachusetts, D.C., Maryland, Alabama, and Arkansas
+
+    -   And institutions focusing on STEM Education or similar initiatives
+
+-   Long-lasting consequences on research and scientific enquiry
+:::
+
+::: {.column width="50%"}
+-   Limitations
+
+    -   Presentation of raw or summarized data
+
+    -   Standardizing across states in Question 2
+
+-   Further directions:
+
+    -   Continued analysis as terminations continue
+
+    -   Critical to track and document this data as it becomes available
+:::
+:::::
+
+# Thank you

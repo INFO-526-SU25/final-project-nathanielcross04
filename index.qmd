@@ -1,6 +1,6 @@
 ---
 title: "Who Bears the Brunt? Visualizing the Areas Most Impacted by Trump's Grant Cuts"
-subtitle: "Project"
+subtitle: "Project Report"
 author: 
   - name: "Nathaniel Cross"
     affiliations:
@@ -76,6 +76,8 @@ terminations |>
 
 ## Abstract
 
+Recently implemented federal policies and executive actions have given root to many changes in research and academia spaces. Trump Administration policies are drastically reducing budgets of many scientific institutions in efforts to cut costs, thereby leading to ramifications for organizations across the country. One such example can be seen with the National Science Foundation, a federal organization that administers billions of dollars in grants to institutions all over the United States. However, due to the developing nature of this issue, there exists little documentation on the nationwide impacts of these terminations. Grant Watch, an independently managed project, is tracking grants administered by the National Science Foundation and their terminations, and the resulting dataset has been visualized in two dimensions in the following plots. Ultimately, these visualizations reveal interesting trends and outliers related to these grant terminations, as explored below.
+
 ## General Introduction
 
 This project examines trends in National Science Foundation grant terminations induced by the Trump Administration. More specifically, designed visualizations attempt to understand who is most impacted by these terminations, including the scientific domains and geographic entities most impacted. The visualizations use data from the primary dataset, National Science Foundation Grant Terminations. The NSF Grant Terminations dataset yields from Grant Watch, an independent project whose goal is to track the termination of scientific research grants under the Trump Administration's second term (beginning in 2025). Data is sourced largely by submissions from affected investigators and researchers at institutions across the United States, as well as from user-submitted lists of terminated grants, all of which are corroborated via the NSF's Award Search function and USAspending.gov. The dataset tracks individual grant terminations, and includes information on the organization receiving the grant, date of termination, and value terminated. The time frame spans from April 18 to May 15. 
@@ -104,9 +106,9 @@ To answer this question, I chose to use a line graph to best depict how grant te
 
 -   Faceting: I chose to facet the line plots based on directorate, allowing for easy comparisons from directorate to directorate. Although utilizing this strategy may decrease the data-to-ink ratio, faceting allows for much more legible and digestible plots, rather than including eight directorates overlayed in one panel. In addition to faceting, color was also mapped to directorate to further distinguish values of this variable from each other. 
 
--   Cumulative summations: Value of grant terminations is shown cumulatively, over time. Although this variable was initially visualized raw, I chose to calculate cumulative summations of the independent variable to represent total terminations, instead of terminations t specific points in time. With this manipulation, viewers are able to look to the final point of the line plot to see the total value/total number of grants terminated by directorate. 
+-   Cumulative summations: Grant terminations are shown cumulatively over time. Although this variable was initially visualized raw, I chose to calculate cumulative summations of the independent variable to represent total terminations, instead of terminations at specific points in time. With this manipulation, viewers are able to look to the final point of the line plot to see the total value/total number of grants terminated by directorate. 
 
--   Moving averages: Initial designs for this plot—including the proposal—included plans to include moving averages of the value of grants terminated. This element of the plots was discontinued, however, due to the faceting by directorate, which meant that on average, each directorate only saw grant cancellations on 4.75 distinct dates—far too few to give reason to incorporate moving averages.
+-   Moving averages: Initial designs for this plot—including the proposal—included plans to include moving averages of the value of grants terminated. This element of the plots was discontinued however, due to the faceting by directorate which meant that on average, each directorate only saw grant cancellations on 4.75 distinct dates—far too few to give reason to incorporate moving averages.
 
 -   Dropped NAs: Given how few NAs were present in this dataset, any row with an NA was dropped. This resulted in six rows being dropped, bringing the total number of rows down from 1,653 to 1,647.
 
@@ -430,7 +432,7 @@ term2_final_count |>
   )
 ```
 
-**Alt text:** The figure is a faceted line graph titled, 'STEM education grants hit hardest by Trump terminations' and depicts canceled National Science Foundation grants throughout the spring of 2025 by directorate. Canceled grants are measured through a cumulative sum, and are tracked across a month-long time period from April 18 to May 15. The data shows that most directorates saw a slight increase in value of canceled grants, especially at the end of April, these directorates mostly plateaued between 50 and 100 in quantity of canceled grants. However, for grants allocated to STEM education organizations or projects, number of grants canceled increased drastically, both at the end of April and the beginning of May, resulting in a cumulative 850 grants terminated for this directorate. Additionally, Social, Behavioral and Economic Sciences saw higher rates of grant terminations, around 250 by the middle of May.The figure is a faceted line graph titled, 'STEM education grants hit hardest by Trump terminations' and depicts canceled National Science Foundation grants throughout the spring of 2025 by directorate. Canceled grants are measured through a cumulative sum, and are tracked across a month-long time period from April 18 to May 15. The data shows that most directorates saw a slight increase in value of canceled grants, especially at the end of April, these directorates mostly plateaued between 50 and 100 in quantity of canceled grants. However, for grants allocated to STEM education organizations or projects, number of grants canceled increased drastically, both at the end of April and the beginning of May, resulting in a cumulative 850 grants terminated for this directorate. Additionally, Social, Behavioral and Economic Sciences saw higher rates of grant terminations, around 250 by the middle of May.
+**Alt text:** The figure is a faceted line graph titled, 'STEM education grants hit hardest by Trump terminations' and depicts canceled National Science Foundation grants throughout the spring of 2025 by directorate. Canceled grants are measured through a cumulative sum, and are tracked across a month-long time period from April 18 to May 15. The data shows that most directorates saw a slight increase in value of canceled grants, especially at the end of April, these directorates mostly plateaued between 50 and 100 in quantity of canceled grants. However, for grants allocated to STEM education organizations or projects, number of grants canceled increased drastically, both at the end of April and the beginning of May, resulting in a cumulative 850 grants terminated for this directorate. Additionally, Social, Behavioral and Economic Sciences saw higher rates of grant terminations, around 250 by the middle of May.
 :::
 
 ::: callout-note
@@ -441,7 +443,7 @@ Alt text also embedded in source code for enhanced screen-reading capability. Co
 
 ### Discussion
 
-The two visualizations do not support my hypothesis about STEM fields bearing the brunt of grant terminations—whether looking at quantity or value terminated. Rather, STEM Education is the directorate with the greatest grant terminations in both plots, with around \$900 million in value terminated, or approximately 850 grants. This could possibly be connected to attacks on education, including higher education and education institutions, from the Trump Administration, such as the attempted dismantling of the Department of Education. The timeline of STEM Education grant terminations also differs significantly from other directorates, with the two biggest jumps in grant terminations occurring on April 25 and May 2. 
+The two visualizations do not support my hypothesis about STEM fields bearing the brunt of grant terminations—whether looking at quantity or value terminated. Rather, STEM *Education* is the directorate with the greatest grant terminations in both plots, with around \$900 million in value terminated, or approximately 850 grants. This could possibly be connected to attacks on education, including higher education and education institutions, from the Trump Administration, such as the attempted dismantling of the Department of Education. The timeline of STEM Education grant terminations also differs significantly from other directorates, with the two biggest jumps in grant terminations occurring on April 25 and May 2. 
 
 Contrastingly, most STEM fields/directorates, such as Engineering, Geosciences, and Biological Sciences saw much fewer grant terminations, usually hovering between \$50 and \$100 million in terminated value or about 100 grants terminated by the end of the depicted timeframe. The trends for these fields mirror each other closely when examining the time-series element of the plot, with most terminations occurring between April 18 and April 25, with much fewer occurring between April 25 and May 15. The main deviant from this trend was the Mathematical and Physical Sciences directorate, which did not see major terminations until May 15, demonstrating a back-loaded trend.
 
@@ -465,7 +467,7 @@ To respond to this question, I utilized a choropleth because of their ability to
 
 -   Measuring proportion of grant funding terminated: First, the primary dataset was collapsed to measure total value of grants terminated by state. A second dataset was then merged onto the primary dataset, the NSF Grants dataset. The NSF Grants dataset is derived from NSF by the Numbers, the National Science Foundation's statistics and database portal, including information on funding information for grant awards, funded institutions and organizations, proposals for funding, and obligated spending per year since fiscal year 2011. This dataset was first grouped by state and year to calculate total grants allocated to each state each year, then collapsed to retain the average grant allocation to each state over years. Using both these datasets, grant terminations was divided by average annual allocations to provide the proportion used in the creation of the plot. The proportion was set negative for Republican states to create the diverging colorbar. 
 
--   Measuring partisanship: A state’s partisanship is measured through the use of a proxy variable, the candidate for which a majority of a state’s electoral votes were allocated to in the 2024 presidential election. This variable was drawn from the State Partisanship dataset, which is adopted from the[CNN Politics](https://www.cnn.com/election/2024/results/president?election-data-id=2024-PG&election-painting-mode=projection-with-lead&filter-key-races=false&filter-flipped=false&filter-remaining=false)' reporting on the 2024 presidential election, and details the candidate who won the electoral votes of each state. 
+-   Measuring partisanship: A state’s partisanship is measured through the use of a proxy variable, the candidate for which a majority of a state’s electoral votes were allocated to in the 2024 presidential election. This variable was drawn from the State Partisanship dataset, which is adopted from the [CNN Politics](https://www.cnn.com/election/2024/results/president?election-data-id=2024-PG&election-painting-mode=projection-with-lead&filter-key-races=false&filter-flipped=false&filter-remaining=false)' reporting on the 2024 presidential election, and details the candidate who won the electoral votes of each state. 
 
 -   Base map creation: The base map was created utilizing the `tigris` package. The state geometries for Alaska and Hawaii were then transformed to resize the two states and move them closer to the continental U.S.
 
@@ -618,7 +620,7 @@ term_map |>
   geom_sf(aes(fill = cancel_ratio_perc), color = "black") +
   coord_sf(clip = "off") +
   labs(
-    title = "Massachusetts, Arkansas, and Alabama\nlost greatest proportions of grant funding\nin Trump terminations",
+    title = "Massachusetts and D.C.lost greatest proportions\nof grant funding in Trump terminations",
     subtitle = "Severity of  National Science Foundation grant terminations, by state partisanship",
     fill = "Proportion of terminated\ngrants relative to\naverage annual allocation\n(diverging on state partisanship)",
       ) +
@@ -645,7 +647,7 @@ term_map |>
        )
 ```
 
-## Northeast U.S. code
+## Northeast detail code
 
 ```{r}
 #| label: Question 2 plot NE code
@@ -659,7 +661,7 @@ term_map |>
   geom_sf(aes(fill = cancel_ratio_perc), color = "black") +
   coord_sf(xlim = c(-79, -69), ylim = c(37, 44), expand = FALSE, clip = "on") +
   labs(
-    title = "Massachusetts, Arkansas, and Alabama\nlost greatest proportions of grant funding\nin Trump terminations",
+    title = "Massachusetts and D.C.lost greatest proportions\nof grant funding in Trump terminations",
     subtitle = "Severity of  National Science Foundation grant terminations, by partisanship",
     fill = "Proportion of terminated\ngrants relative to\naverage annual allocation\n(diverging on state partisanship)",
       ) +
@@ -699,7 +701,7 @@ term_map |>
 #| execute:
 #| echo: false
 #| output: true
-#| fig-alt: "The figure is a choropleth titled, 'Massachusetts, Arkansas, and Alabama lost greatest proportions of grant funding in Trump terminations' and depicts the severity of National Science Foundation grant terminations by state and state partisanship. All fifty U.S. states are pictured, and states' fill is mapped to both partisanship and grant terminations. Terminations are calculated as a proportion of value of grants terminated to average annual allocation to each state. Arkansas and Alabama are the two Republican states to suffer the worst from terminations, with canceled value around 0.6% of average annual allocations. Contrastingly, Massachusetts is the Democratic state most affected by the cancellations, with a ratio of around 0.8%. A subsetted map is also shown highlighting the Northeastern United States."
+#| fig-alt: "The figure is a choropleth titled, 'Massachusetts  and D.C. lost greatest proportions of grant funding in Trump terminations' and depicts the severity of National Science Foundation grant terminations by state and state partisanship. All fifty U.S. states are pictured, and states' fill is mapped to both partisanship and grant terminations. Terminations are calculated as a proportion of value of grants terminated to average annual allocation to each state. Arkansas and Alabama are the two Republican states to suffer the worst from terminations, with canceled value around 0.6% of average annual allocations. Contrastingly, Massachusetts is the Democratic state most affected by the cancellations, with a ratio of around 0.8%. A subsetted map is also shown highlighting the Northeastern United States."
 
 # Plot
 term_map |>
@@ -707,7 +709,7 @@ term_map |>
   geom_sf(aes(fill = cancel_ratio_perc), color = "black") +
   coord_sf(clip = "off") +
   labs(
-    title = "Massachusetts, Arkansas, and Alabama\nlost greatest proportions of grant funding\nin Trump terminations",
+    title = "Massachusetts and D.C.lost greatest proportions\nof grant funding in Trump terminations",
     subtitle = "Severity of  National Science Foundation grant terminations, by partisanship",
     fill = "Proportion of terminated\ngrants relative to\naverage annual allocation\n(diverging on state partisanship)",
       ) +
@@ -734,7 +736,7 @@ term_map |>
        )
 ```
 
-## Northeast U.S.
+## Northeast detail
 
 ```{r}
 #| label: Question 2 plot NE
@@ -750,7 +752,7 @@ term_map |>
   geom_sf(aes(fill = cancel_ratio_perc), color = "black") +
   coord_sf(xlim = c(-79, -69), ylim = c(37, 44), expand = TRUE) +
   labs(
-    title = "Massachusetts, Arkansas, and Alabama\nlost greatest proportions of grant funding\nin Trump terminations",
+    title = "Massachusetts and D.C.lost greatest proportions\nof grant funding in Trump terminations",
     subtitle = "Severity of  National Science Foundation grant terminations, by partisanship",
     fill = "Proportion of terminated\ngrants relative to\naverage annual allocation\n(diverging on state partisanship)",
       ) +
@@ -790,10 +792,12 @@ Alt text also embedded in source code for enhanced screen-reading capability. Co
 
 This visualization ultimately supports my hypothesis regarding the distribution of proportion of grant terminations across the United States. For the majority of states, there is mostly homogeneity in the proportions of dollar value terminated, hovering around 0.3 to 0.4 percent of average annual grant allocation. There is no clustering by region or state partisanship, only individual state outliers as indicated in the title of the plot. 
 
-When looking at Democratic-leaning states, a few jump out: Massachusetts, Maryland, and the District of Columbia. Each of these entities lost 0.62%, 0.41%, and 0.51% of average annual grant funding, respectively. One interpretation of the root of these higher proportions of cut funding in these states could rely on the high quantity of universities and research institutions in each of these three states. Harvard University, located in Massachusetts, has gained media attention for its pushback against Trump Administration attacks, garnering cut funding to the University. Other major research institutions are located in these states including MIT, and Johns Hopkins. Many research organizations, associations, and universities are housed in the District of Columbia, as well, potentially giving reason to the terminated grants in this entity.
+When looking at Democratic-leaning states, a few jump out: Massachusetts, Maryland, and the District of Columbia. Each of these entities lost 0.62%, 0.41%, and 0.51% of average annual grant funding, respectively. One interpretation of the root of these higher proportions of cut funding in these states could rely on the high quantity of universities and research institutions in each of these three states. Harvard University, located in Massachusetts, has gained media attention for its pushback against Trump Administration attacks, garnering cut funding to the University. Other major research institutions are located in these states including MIT and Johns Hopkins. Many research organizations, associations, and universities are housed in the District of Columbia as well, potentially giving reason to the terminated grants in this entity.
 
 Examining Republican-leaning states reveals a different story, however. Alabama and Arkansas are the two red states with the greatest proportion of terminated grants, 0.49 and 0.43 percent, respectively. Unlike the aforementioned blue states, neither of these states houses major research institutions; indeed, the institutions who lost the grant funding were state universities (the University of Alabama and the University of Arkansas, respectively). Unfortunately, both of these universities were engaged in a lot of initiatives housed under the STEM Education and Social, Behavioral and Economic Sciences directorates—the two greatest impacted directorates as examined in Question 1. Another interpretation of the data mapped to these states is that as smaller states receive less grant funding (in the 2-5 billion dollar annual average instead of in the tens of billions of dollars), these states are more vulnerable to smaller grant terminations.
 
 ## Conclusion: limitations and further directions
 
-Ultimately, both of these visualizations provide unique frameworks for examining National Science Foundation grant terminations in the spring of 2025. Faceting by directorate and color-mapping by state partisanship help visualize the areas (e.g. scientific domains and geographic entities) most impacted by the Trump Administration’s grant terminations. Further analysis could include a more rigorous statistical examination of the state attributes most likely to impact grant terminations or organizational grant terminations through the implementation of an OLS model. Similarly, examining differences in trends between raw and summarized/proportional data was one decisionmaking area which I would expand on in further exploration. I attempted to tease out differences in relationships as much as possible in Question 1 by showing dollar value versus raw count in two separate plots, however examining proportions of total funding cut by directorate would make for interesting analysis as well, especially as funding is likely not equal between directorates. Similarly, there may be better methods to quantify the independent variable examined in Question 2. I wanted to standardize grant terminations across states somehow (so that larger, more populous states would not be seen as having more grants terminated), and I was able to accomplish this by averaging annual grant allocations, however there may be a better standardization method. Finally, continuing to examine these trends as more grants are cut is critical to documenting the Trump Administration’s attacks on education and academia. This dataset solely encompasses grants cut between April 18 and May 15, however as more data becomes available, trends must continue to be analyzed.
+Ultimately, both of these visualizations provide unique frameworks for examining National Science Foundation grant terminations in the spring of 2025. Faceting by directorate and color-mapping by state partisanship help visualize the areas (e.g. scientific domains and geographic entities) most impacted by the Trump Administration’s grant terminations.
+
+Further analysis could include a more rigorous statistical examination of the state attributes most likely to impact grant terminations or organizational grant terminations through the implementation of an OLS model. Similarly, examining differences in trends between raw and summarized/proportional data was one decision-making area which I would expand on in further exploration. I attempted to tease out differences in relationships as much as possible in Question 1 by showing dollar value versus raw count in two separate plots, however examining proportions of total funding cut by directorate would make for interesting analysis as well, especially as funding is likely not equal between directorates. Similarly, there may be better methods to quantify the independent variable examined in Question 2. I wanted to standardize grant terminations across states somehow (so that larger, more populous states would not be seen as having more grants terminated solely due to their size), and I was able to accomplish this by averaging annual grant allocations, however there may be a better standardization method. Finally, continuing to examine these trends as more grants are cut is critical to documenting the Trump Administration’s attacks on education and academia. This dataset solely encompasses grants cut between April 18 and May 15, however as more data becomes available, trends must continue to be analyzed.
