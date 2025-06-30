@@ -9,7 +9,7 @@
 <meta name="author" content="Nathaniel Cross">
 <meta name="description" content="This project examines trends in National Science Foundation research grants terminated under the Trump Administration in 2025 adopting a data visualization approach through the creation and interpretation of unique plots.">
 
-<title>Examining Trump’s Grant Terminations through Visualizations – NSF Grant Terminations</title>
+<title>Who Bears the Brunt? Visualizing the Areas Most Impacted by Trump’s Grant Cuts – NSF Grant Terminations</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -4822,7 +4822,7 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Examining Trump’s Grant Terminations through Visualizations</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Who Bears the Brunt? Visualizing the Areas Most Impacted by Trump’s Grant Cuts</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 <p class="subtitle lead">Proposal</p>
 </div>
 
@@ -4971,18 +4971,25 @@ $ in_cruz_list            &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 
 </section>
 <section id="questions" class="level2">
 <h2 class="anchored" data-anchor-id="questions">Questions</h2>
-<ol type="1">
-<li><p>How does the quantity of grants terminated vary by state and is this heterogeneity correlated with the state’s partisanship?</p></li>
-<li><p>How do directorates compare in terms of the dollar value of terminated grants by date?</p>
-<ol type="1">
-<li>Note: NSF directorates are the highest levels of administrative organizations administering grants. Examples include STEM Education and Social, Behavioral, and Economic Sciences.</li>
-</ol></li>
-</ol>
+<p><strong>1. Which scientific domains saw the highest grant termination rates?</strong></p>
+<p>This question uses directorates to compare the dollar value of terminated grants over time. NSF directorates are the highest levels of administrative organizations administering grants. Examples include STEM Education and Social, Behavioral, and Economic Sciences.</p>
+<p>Hypothesis: I expect directorates relating to STEM research to be most affected at the outset of the cancellations.</p>
+<p><strong>2. Were grant terminations clustered by geography or motivated by states’ political leanings?</strong></p>
+<p>This question attempts to analyze how the quantity of grants terminated varies by state, and will superimpose state partisanship to understand how heterogeneity in terminated grants is impacted by this variable.</p>
+<p>Hypothesis: I expect Democrat-leaning states may have more grants canceled due to the polarized nature of these terminations.</p>
 </section>
 <section id="analysis-plans" class="level2">
 <h2 class="anchored" data-anchor-id="analysis-plans">Analysis Plans</h2>
 <section id="question-1" class="level3">
 <h3 class="anchored" data-anchor-id="question-1">Question 1</h3>
+<ol type="1">
+<li><p>Data wrangling: select the necessary variables for this plot: <code>directorate</code>, a character categorical column to identify the NSF organization awarding the grant; <code>usaspending_obligated</code>, the dollar value of funding lost by the grant terminations; and <code>termination_letter_date</code>, the date when the organization was informed of the termination of the grant. This variable is used as a proxy for termination date as actual expected end dates of the grants are only estimated and not confirmed. I do not expect to need further wrangling.</p></li>
+<li><p>Create plot: I envision time-series plots of moving averages of value of grant over time. These plots will be faceted by directorate. Based on what I’ve researched, ggplot has moving average functionality within the <code>geom_ma()</code> function, however if this is not able to capture the variation I want, I can calculate the moving averages by directorate in the data wrangling process.</p></li>
+<li><p>*Note: as revealed in the above code chunk, there are very few missing observations (four missings from <code>termination_letter_date</code>, two from <code>directorate</code>, and two from <code>usaspending_obligated</code>). Hence, these rows will be dropped when coding this plot.</p></li>
+</ol>
+</section>
+<section id="question-2" class="level3">
+<h3 class="anchored" data-anchor-id="question-2">Question 2</h3>
 <ol type="1">
 <li>Data wrangling: sum the number of grants terminated by state, collapse the dataset. This will result in two variables: <code>org_state</code> and a new variable, <code>terminations_quant</code>, a double. There will be one row per state. No missing values will be generated as there are no missing <code>org_state</code> observations.</li>
 <li>Merge dataset of 2024 presidential Electoral College outcomes by state (i.e. whether the state’s electoral votes were allocated to Kamala Harris or Donald Trump). This will yield the creation of a new binary variable, <code>elect_trump_24</code>, a logic variable equal to 1/TRUE if the state allocated all (or a majority in the cases of Nebraska and Maine) of its electoral votes to Donald Trump in 2024, or 0/FALSE if the votes were allocated to Kamala Harris.</li>
@@ -4991,14 +4998,6 @@ $ in_cruz_list            &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 
 <li>Create plot: I envision a map plot of states in the United States with each state colored either red or blue by 2024 presidential election result and the number of grants terminated mapped to the intensity of the color). States without a winner-take-all electoral system (i.e. Nebraska and Maine) will be coded by the candidate who won the majority of that state’s electoral votes in 2024 (Trump in Nebraska and Harris in Maine). This behavior will be noted in the write-up and in the plot itself.</li>
 <li>The plot will be first introduced by showing a single state coded by its 2024 presidential outcome and quantity of grant terminations. This will help ease the viewer into understanding the chart. Then the whole country will be displayed as well as smaller/regional chunks of areas with smaller/more dense states. This helps ensure that the mapped data is viewable in every state.</li>
 <li>A table of the grant terminations by state will be shown in the write-up to allow for more detailed analysis.</li>
-</ol>
-</section>
-<section id="question-2" class="level3">
-<h3 class="anchored" data-anchor-id="question-2">Question 2</h3>
-<ol type="1">
-<li><p>Data wrangling: select the necessary variables for this plot: <code>directorate</code>, a character categorical column to identify the NSF organization awarding the grant; <code>usaspending_obligated</code>, the dollar value of funding lost by the grant terminations; and <code>termination_letter_date</code>, the date when the organization was informed of the termination of the grant. This variable is used as a proxy for termination date as actual expected end dates of the grants are only estimated and not confirmed. I do not expect to need further wrangling.</p></li>
-<li><p>Create plot: I envision time-series plots of moving averages of value of grant over time. These plots will be faceted by directorate. Based on what I’ve researched, ggplot has moving average functionality within the <code>geom_ma()</code> function, however if this is not able to capture the variation I want, I can calculate the moving averages by directorate in the data wrangling process.</p></li>
-<li><p>*Note: as revealed in the above code chunk, there are very few missing observations (four missings from <code>termination_letter_date</code>, two from <code>directorate</code>, and two <code>fromusespending_obligated</code>). Hence, these rows will be dropped when coding this plot.</p></li>
 </ol>
 </section>
 </section>
@@ -5038,28 +5037,28 @@ $ in_cruz_list            &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, 
 </tr>
 <tr class="odd">
 <td>Submit for instructor review</td>
-<td>In progress</td>
+<td>Completed</td>
 <td>2025-06-18</td>
 <td>High</td>
 <td></td>
 </tr>
 <tr class="even">
 <td>Question 1 plotting</td>
-<td>In progress</td>
+<td>Completed</td>
 <td>2025-07-02</td>
 <td>High</td>
 <td>Personal deadline: 2025-06-26</td>
 </tr>
 <tr class="odd">
 <td>Question 2 plotting</td>
-<td>In progress</td>
+<td>Completed</td>
 <td>2025-07-02</td>
 <td>High</td>
 <td>Personal deadline: 2025-06-26</td>
 </tr>
 <tr class="even">
 <td>Write-up</td>
-<td>Not started</td>
+<td>In progress</td>
 <td>2025-07-02</td>
 <td>Low</td>
 <td>Personal deadline: 2025-06-28</td>
@@ -5746,7 +5745,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class>
 <div class="sourceCode" id="cb12" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">---</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="an">title:</span><span class="co"> &quot;Examining Trump&#39;s Grant Terminations through Visualizations&quot;</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="an">title:</span><span class="co"> &quot;Who Bears the Brunt? Visualizing the Areas Most Impacted by Trump&#39;s Grant Cuts&quot;</span></span>
 <span id="cb12-3"><a href="#cb12-3"></a><span class="an">subtitle:</span><span class="co"> &quot;Proposal&quot;</span></span>
 <span id="cb12-4"><a href="#cb12-4"></a><span class="an">author:</span><span class="co"> </span></span>
 <span id="cb12-5"><a href="#cb12-5"></a><span class="co">  - name: &quot;Nathaniel Cross&quot;</span></span>
@@ -5765,96 +5764,105 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb12-18"><a href="#cb12-18"></a><span class="co">  warning: false</span></span>
 <span id="cb12-19"><a href="#cb12-19"></a><span class="co">---</span></span>
 <span id="cb12-20"><a href="#cb12-20"></a></span>
-<span id="cb12-21"><a href="#cb12-21"></a><span class="in">```{r setup}</span></span>
-<span id="cb12-22"><a href="#cb12-22"></a></span>
-<span id="cb12-23"><a href="#cb12-23"></a><span class="in"># install and load packages</span></span>
-<span id="cb12-24"><a href="#cb12-24"></a><span class="in">if(!require(pacman))</span></span>
-<span id="cb12-25"><a href="#cb12-25"></a><span class="in">  install.packages(&quot;pacman&quot;)</span></span>
-<span id="cb12-26"><a href="#cb12-26"></a></span>
-<span id="cb12-27"><a href="#cb12-27"></a><span class="in">pacman::p_load(tidyverse,</span></span>
-<span id="cb12-28"><a href="#cb12-28"></a><span class="in">               janitor)</span></span>
+<span id="cb12-23"><a href="#cb12-23"></a><span class="in">```{r}</span></span>
+<span id="cb12-24"><a href="#cb12-24"></a><span class="co">#| label: R setup</span></span>
+<span id="cb12-25"><a href="#cb12-25"></a></span>
+<span id="cb12-26"><a href="#cb12-26"></a><span class="co"># install and load packages</span></span>
+<span id="cb12-27"><a href="#cb12-27"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(pacman))</span>
+<span id="cb12-28"><a href="#cb12-28"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;pacman&quot;</span>)</span>
 <span id="cb12-29"><a href="#cb12-29"></a></span>
-<span id="cb12-30"><a href="#cb12-30"></a><span class="in">devtools::install_github(&quot;tidyverse/dsbox&quot;)</span></span>
-<span id="cb12-31"><a href="#cb12-31"></a><span class="in">```</span></span>
+<span id="cb12-30"><a href="#cb12-30"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse,</span>
+<span id="cb12-31"><a href="#cb12-31"></a>               janitor)</span>
 <span id="cb12-32"><a href="#cb12-32"></a></span>
-<span id="cb12-33"><a href="#cb12-33"></a><span class="fu">## Dataset</span></span>
-<span id="cb12-34"><a href="#cb12-34"></a></span>
-<span id="cb12-37"><a href="#cb12-37"></a><span class="in">```{r}</span></span>
-<span id="cb12-38"><a href="#cb12-38"></a><span class="co"># Read in dataset</span></span>
-<span id="cb12-39"><a href="#cb12-39"></a>raw_terminations <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/nsf_terminations_airtable.csv&quot;</span>)</span>
-<span id="cb12-40"><a href="#cb12-40"></a></span>
-<span id="cb12-41"><a href="#cb12-41"></a><span class="co"># Clean data (code sourced from TidyTuesday)</span></span>
-<span id="cb12-42"><a href="#cb12-42"></a>terminations <span class="ot">&lt;-</span> raw_terminations <span class="sc">|&gt;</span> </span>
-<span id="cb12-43"><a href="#cb12-43"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb12-44"><a href="#cb12-44"></a>  <span class="fu">mutate</span>(<span class="at">usaspending_obligated =</span> stringi<span class="sc">::</span><span class="fu">stri_replace_first_fixed</span>(usaspending_obligated, <span class="st">&quot;$&quot;</span>, <span class="st">&quot;&quot;</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb12-45"><a href="#cb12-45"></a>           readr<span class="sc">::</span><span class="fu">parse_number</span>()) <span class="sc">|&gt;</span> </span>
-<span id="cb12-46"><a href="#cb12-46"></a>  <span class="fu">mutate</span>(<span class="at">in_cruz_list =</span> <span class="sc">!</span><span class="fu">is.na</span>(in_cruz_list)) <span class="sc">|&gt;</span> </span>
-<span id="cb12-47"><a href="#cb12-47"></a>  <span class="fu">mutate</span>(<span class="at">grant_number =</span> <span class="fu">as.character</span>(grant_number)) </span>
-<span id="cb12-48"><a href="#cb12-48"></a></span>
-<span id="cb12-49"><a href="#cb12-49"></a><span class="co"># Preview data</span></span>
-<span id="cb12-50"><a href="#cb12-50"></a>terminations <span class="sc">|&gt;</span></span>
-<span id="cb12-51"><a href="#cb12-51"></a>  <span class="fu">glimpse</span>()</span>
-<span id="cb12-52"><a href="#cb12-52"></a></span>
-<span id="cb12-53"><a href="#cb12-53"></a><span class="fu">dim</span>(terminations)</span>
-<span id="cb12-54"><a href="#cb12-54"></a></span>
-<span id="cb12-55"><a href="#cb12-55"></a><span class="fu">colnames</span>(terminations)</span>
-<span id="cb12-56"><a href="#cb12-56"></a></span>
-<span id="cb12-57"><a href="#cb12-57"></a>terminations<span class="sc">$</span>directorate <span class="sc">|&gt;</span></span>
-<span id="cb12-58"><a href="#cb12-58"></a>  <span class="fu">unique</span>()</span>
+<span id="cb12-33"><a href="#cb12-33"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;tidyverse/dsbox&quot;</span>)</span>
+<span id="cb12-34"><a href="#cb12-34"></a><span class="in">```</span></span>
+<span id="cb12-35"><a href="#cb12-35"></a></span>
+<span id="cb12-36"><a href="#cb12-36"></a><span class="fu">## Dataset</span></span>
+<span id="cb12-37"><a href="#cb12-37"></a></span>
+<span id="cb12-40"><a href="#cb12-40"></a><span class="in">```{r}</span></span>
+<span id="cb12-41"><a href="#cb12-41"></a><span class="co">#| label: Data preparation and cleaning</span></span>
+<span id="cb12-42"><a href="#cb12-42"></a></span>
+<span id="cb12-43"><a href="#cb12-43"></a><span class="co"># Read in dataset</span></span>
+<span id="cb12-44"><a href="#cb12-44"></a>raw_terminations <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/nsf_terminations_airtable.csv&quot;</span>)</span>
+<span id="cb12-45"><a href="#cb12-45"></a></span>
+<span id="cb12-46"><a href="#cb12-46"></a><span class="co"># Clean data (code sourced from TidyTuesday)</span></span>
+<span id="cb12-47"><a href="#cb12-47"></a>terminations <span class="ot">&lt;-</span> raw_terminations <span class="sc">|&gt;</span> </span>
+<span id="cb12-48"><a href="#cb12-48"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb12-49"><a href="#cb12-49"></a>  <span class="fu">mutate</span>(<span class="at">usaspending_obligated =</span> stringi<span class="sc">::</span><span class="fu">stri_replace_first_fixed</span>(usaspending_obligated, <span class="st">&quot;$&quot;</span>, <span class="st">&quot;&quot;</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-50"><a href="#cb12-50"></a>           readr<span class="sc">::</span><span class="fu">parse_number</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb12-51"><a href="#cb12-51"></a>  <span class="fu">mutate</span>(<span class="at">in_cruz_list =</span> <span class="sc">!</span><span class="fu">is.na</span>(in_cruz_list)) <span class="sc">|&gt;</span> </span>
+<span id="cb12-52"><a href="#cb12-52"></a>  <span class="fu">mutate</span>(<span class="at">grant_number =</span> <span class="fu">as.character</span>(grant_number)) </span>
+<span id="cb12-53"><a href="#cb12-53"></a></span>
+<span id="cb12-54"><a href="#cb12-54"></a><span class="co"># Preview data</span></span>
+<span id="cb12-55"><a href="#cb12-55"></a>terminations <span class="sc">|&gt;</span></span>
+<span id="cb12-56"><a href="#cb12-56"></a>  <span class="fu">glimpse</span>()</span>
+<span id="cb12-57"><a href="#cb12-57"></a></span>
+<span id="cb12-58"><a href="#cb12-58"></a><span class="fu">dim</span>(terminations)</span>
 <span id="cb12-59"><a href="#cb12-59"></a></span>
-<span id="cb12-60"><a href="#cb12-60"></a><span class="co"># Missings report</span></span>
-<span id="cb12-61"><a href="#cb12-61"></a><span class="fu">sapply</span>(terminations, <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">is.na</span>(x)))</span>
-<span id="cb12-62"><a href="#cb12-62"></a><span class="in">```</span></span>
-<span id="cb12-63"><a href="#cb12-63"></a></span>
-<span id="cb12-64"><a href="#cb12-64"></a>The above dataset yields from <span class="co">[</span><span class="ot">Grant Watch</span><span class="co">](https://grant-watch.us/nsf-data.html)</span>, an independent project whose goal is to track the termination of scientific research grants under the Trump Administration&#39;s second term (beginning in 2025). It is led by <span class="co">[</span><span class="ot">Noam Ross</span><span class="co">](https://www.noamross.net/)</span>, a computational researcher and Executive Director of rOpenSci, and <span class="co">[</span><span class="ot">Scott Delaney</span><span class="co">](https://hsph.harvard.edu/profile/scott-delaney/)</span>, a research scientist at Harvard University&#39;s Department of Environmental Health. Although Grant Watch collects data on grants allocated by both the National Institutes of Health and the National Science Foundation (NSF), the scope of this project is reduced to grants terminated under the NSF largely due to the accessibility of this data from <span class="co">[</span><span class="ot">TidyTuesday</span><span class="co">](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-05-06/readme.md)</span>.</span>
-<span id="cb12-65"><a href="#cb12-65"></a></span>
-<span id="cb12-66"><a href="#cb12-66"></a>The NSF Grant Terminations dataset is sourced largely by submissions from affected investigators and researchers at institutions across the United States, as well as from user-submitted lists of terminated grants, all of which are corroborated via the NSF&#39;s <span class="co">[</span><span class="ot">Award Search</span><span class="co">](https://www.nsf.gov/awardsearch/)</span> function and <span class="co">[</span><span class="ot">USAspending.gov</span><span class="co">](https://www.usaspending.gov/)</span>. No centralized government database exists for tracking terminated grants.</span>
-<span id="cb12-67"><a href="#cb12-67"></a></span>
-<span id="cb12-68"><a href="#cb12-68"></a>The dataset includes 1653 rows and 22 columns. Key columns include the project title and abstract for which the grant was awarded, value of the grant, dates of awarding and termination, and details about the organization the grant was allocated to. Both numerical and categorical variables are represented in the dataset, and a more comprehensive breakdown of these variables can be found in the <span class="in">`glimpse()`</span> above, or in the metadata/readme.</span>
-<span id="cb12-69"><a href="#cb12-69"></a></span>
-<span id="cb12-70"><a href="#cb12-70"></a>I chose this dataset for two primary reasons: the first is that as a student in the Master of Public Policy program, I find federal policy very interesting. This is especially true given the scope of the changes seen since the beginning of Trump&#39;s second term, including drastic measures like slashing research grants. The other main reason I selected this dataset is due to the contemporary relevance of this issue: the Trump Administration is enacting these terminations live, and this data is both formative and still evolving. Tracking these terminations is critical to documenting these measures aimed at inhibiting scientific research in the United States. And although I am well aware that the plots produced here will hardly rival the research I&#39;m sure is being investigated on these grants, I find it important to increase awareness to both the scope of these terminations as well as the chaos surrounding them, making documentation ever more difficult.</span>
-<span id="cb12-71"><a href="#cb12-71"></a></span>
-<span id="cb12-72"><a href="#cb12-72"></a><span class="fu">## Questions</span></span>
-<span id="cb12-73"><a href="#cb12-73"></a></span>
-<span id="cb12-74"><a href="#cb12-74"></a><span class="ss">1.  </span>How does the quantity of grants terminated vary by state and is this heterogeneity correlated with the state&#39;s partisanship?</span>
-<span id="cb12-75"><a href="#cb12-75"></a></span>
-<span id="cb12-76"><a href="#cb12-76"></a><span class="ss">2.  </span>How do directorates compare in terms of the dollar value of terminated grants by date?</span>
-<span id="cb12-77"><a href="#cb12-77"></a></span>
-<span id="cb12-78"><a href="#cb12-78"></a><span class="ss">    1.  </span>Note: NSF directorates are the highest levels of administrative organizations administering grants. Examples include STEM Education and Social, Behavioral, and Economic Sciences.</span>
-<span id="cb12-79"><a href="#cb12-79"></a></span>
-<span id="cb12-80"><a href="#cb12-80"></a><span class="fu">## Analysis Plans</span></span>
-<span id="cb12-81"><a href="#cb12-81"></a></span>
-<span id="cb12-82"><a href="#cb12-82"></a><span class="fu">### Question 1</span></span>
-<span id="cb12-83"><a href="#cb12-83"></a></span>
-<span id="cb12-84"><a href="#cb12-84"></a><span class="ss">1.  </span>Data wrangling: sum the number of grants terminated by state, collapse the dataset. This will result in two variables: <span class="in">`org_state`</span> and a new variable, <span class="in">`terminations_quant`</span>, a double. There will be one row per state. No missing values will be generated as there are no missing <span class="in">`org_state`</span> observations.</span>
-<span id="cb12-85"><a href="#cb12-85"></a><span class="ss">2.  </span>Merge dataset of 2024 presidential Electoral College outcomes by state (i.e. whether the state&#39;s electoral votes were allocated to Kamala Harris or Donald Trump). This will yield the creation of a new binary variable, <span class="in">`elect_trump_24`</span>, a logic variable equal to 1/TRUE if the state allocated all (or a majority in the cases of Nebraska and Maine) of its electoral votes to Donald Trump in 2024, or 0/FALSE if the votes were allocated to Kamala Harris.</span>
-<span id="cb12-86"><a href="#cb12-86"></a><span class="ss">3.  </span><span class="sc">\*</span>Note: I have yet to figure out how to encode both of these variables (<span class="in">`terminations_quant`</span> and <span class="in">`elect_trump_24`</span> into the aesthetic mappings of the map plot. I do not know whether I have to encode them both into a single variable (where positive values of quantity of grants terminated represent &quot;red&quot; states and negative values represent &quot;blue&quot; states), or if I can separately map these variables onto fill and intensity aesthetics. Advice would be appreciated.</span>
-<span id="cb12-87"><a href="#cb12-87"></a><span class="ss">4.  </span><span class="sc">\*</span>Note: I also need to figure out a way to standardize the grant terminations variable. Solely using the quantity of grants terminated will introduce skewness as larger, more populated states will inherently have more grants that can be cancelled, thereby veiling the relationship between a state&#39;s partisanship and the number of grants cancelled. I could do this by using the value of grants terminated divided by the state&#39;s GDP, but I am not sold on this solution. Again, advice would be appreciated.</span>
-<span id="cb12-88"><a href="#cb12-88"></a><span class="ss">5.  </span>Create plot: I envision a map plot of states in the United States with each state colored either red or blue by 2024 presidential election result and the number of grants terminated mapped to the intensity of the color). States without a winner-take-all electoral system (i.e. Nebraska and Maine) will be coded by the candidate who won the majority of that state&#39;s electoral votes in 2024 (Trump in Nebraska and Harris in Maine). This behavior will be noted in the write-up and in the plot itself.</span>
-<span id="cb12-89"><a href="#cb12-89"></a><span class="ss">6.  </span>The plot will be first introduced by showing a single state coded by its 2024 presidential outcome and quantity of grant terminations. This will help ease the viewer into understanding the chart. Then the whole country will be displayed as well as smaller/regional chunks of areas with smaller/more dense states. This helps ensure that the mapped data is viewable in every state.</span>
-<span id="cb12-90"><a href="#cb12-90"></a><span class="ss">7.  </span>A table of the grant terminations by state will be shown in the write-up to allow for more detailed analysis.</span>
-<span id="cb12-91"><a href="#cb12-91"></a></span>
-<span id="cb12-92"><a href="#cb12-92"></a><span class="fu">### Question 2</span></span>
-<span id="cb12-93"><a href="#cb12-93"></a></span>
-<span id="cb12-94"><a href="#cb12-94"></a><span class="ss">1.  </span>Data wrangling: select the necessary variables for this plot: <span class="in">`directorate`</span>, a character categorical column to identify the NSF organization awarding the grant; <span class="in">`usaspending_obligated`</span>, the dollar value of funding lost by the grant terminations; and <span class="in">`termination_letter_date`</span>, the date when the organization was informed of the termination of the grant. This variable is used as a proxy for termination date as actual expected end dates of the grants are only estimated and not confirmed. I do not expect to need further wrangling.</span>
-<span id="cb12-95"><a href="#cb12-95"></a></span>
-<span id="cb12-96"><a href="#cb12-96"></a><span class="ss">2.  </span>Create plot: I envision time-series plots of moving averages of value of grant over time. These plots will be faceted by directorate. Based on what I&#39;ve researched, ggplot has moving average functionality within the <span class="in">`geom_ma()`</span> function, however if this is not able to capture the variation I want, I can calculate the moving averages by directorate in the data wrangling process.</span>
-<span id="cb12-97"><a href="#cb12-97"></a></span>
-<span id="cb12-98"><a href="#cb12-98"></a><span class="ss">3.  </span><span class="sc">\*</span>Note: as revealed in the above code chunk, there are very few missing observations (four missings from <span class="in">`termination_letter_date`</span>, two from <span class="in">`directorate`</span>, and two <span class="in">`fromusespending_obligated`</span>). Hence, these rows will be dropped when coding this plot.</span>
-<span id="cb12-99"><a href="#cb12-99"></a></span>
-<span id="cb12-100"><a href="#cb12-100"></a><span class="fu">## Plan of Attack</span></span>
-<span id="cb12-101"><a href="#cb12-101"></a></span>
-<span id="cb12-102"><a href="#cb12-102"></a>| Task | Status | Due | Priority | Summary |</span>
-<span id="cb12-103"><a href="#cb12-103"></a>|---------------|---------------|---------------|---------------|---------------|</span>
-<span id="cb12-104"><a href="#cb12-104"></a>| Finalize proposal for peer review | Completed | 2025-06-13 | High |  |</span>
-<span id="cb12-105"><a href="#cb12-105"></a>| Respond to peer reviews | Completed | 2025-06-18 | Medium | Amended proposal to address issues, closed issues. |</span>
-<span id="cb12-106"><a href="#cb12-106"></a>| Submit for instructor review | In progress | 2025-06-18 | High |  |</span>
-<span id="cb12-107"><a href="#cb12-107"></a>| Question 1 plotting | In progress | 2025-07-02 | High | Personal deadline: 2025-06-26 |</span>
-<span id="cb12-108"><a href="#cb12-108"></a>| Question 2 plotting | In progress | 2025-07-02 | High | Personal deadline: 2025-06-26 |</span>
-<span id="cb12-109"><a href="#cb12-109"></a>| Write-up | Not started | 2025-07-02 | Low | Personal deadline: 2025-06-28 |</span>
-<span id="cb12-110"><a href="#cb12-110"></a>| Presentation | Not started | 2025-07-02 | Low | Personal deadline: 2025-06-28 |</span>
-<span id="cb12-111"><a href="#cb12-111"></a>| Revision | Not started | 2025-07-02 | Low | Personal deadline: 2025-06-29 |</span>
-<span id="cb12-112"><a href="#cb12-112"></a>| Final .qmd publication | Not started | 2025-07-02 | Low | Personal deadline: 2025-06-29 |</span>
+<span id="cb12-60"><a href="#cb12-60"></a><span class="fu">colnames</span>(terminations)</span>
+<span id="cb12-61"><a href="#cb12-61"></a></span>
+<span id="cb12-62"><a href="#cb12-62"></a>terminations<span class="sc">$</span>directorate <span class="sc">|&gt;</span></span>
+<span id="cb12-63"><a href="#cb12-63"></a>  <span class="fu">unique</span>()</span>
+<span id="cb12-64"><a href="#cb12-64"></a></span>
+<span id="cb12-65"><a href="#cb12-65"></a><span class="co"># Missings report</span></span>
+<span id="cb12-66"><a href="#cb12-66"></a><span class="fu">sapply</span>(terminations, <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">is.na</span>(x)))</span>
+<span id="cb12-67"><a href="#cb12-67"></a><span class="in">```</span></span>
+<span id="cb12-68"><a href="#cb12-68"></a></span>
+<span id="cb12-69"><a href="#cb12-69"></a>The above dataset yields from <span class="co">[</span><span class="ot">Grant Watch</span><span class="co">](https://grant-watch.us/nsf-data.html)</span>, an independent project whose goal is to track the termination of scientific research grants under the Trump Administration&#39;s second term (beginning in 2025). It is led by <span class="co">[</span><span class="ot">Noam Ross</span><span class="co">](https://www.noamross.net/)</span>, a computational researcher and Executive Director of rOpenSci, and <span class="co">[</span><span class="ot">Scott Delaney</span><span class="co">](https://hsph.harvard.edu/profile/scott-delaney/)</span>, a research scientist at Harvard University&#39;s Department of Environmental Health. Although Grant Watch collects data on grants allocated by both the National Institutes of Health and the National Science Foundation (NSF), the scope of this project is reduced to grants terminated under the NSF largely due to the accessibility of this data from <span class="co">[</span><span class="ot">TidyTuesday</span><span class="co">](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-05-06/readme.md)</span>.</span>
+<span id="cb12-70"><a href="#cb12-70"></a></span>
+<span id="cb12-71"><a href="#cb12-71"></a>The NSF Grant Terminations dataset is sourced largely by submissions from affected investigators and researchers at institutions across the United States, as well as from user-submitted lists of terminated grants, all of which are corroborated via the NSF&#39;s <span class="co">[</span><span class="ot">Award Search</span><span class="co">](https://www.nsf.gov/awardsearch/)</span> function and <span class="co">[</span><span class="ot">USAspending.gov</span><span class="co">](https://www.usaspending.gov/)</span>. No centralized government database exists for tracking terminated grants.</span>
+<span id="cb12-72"><a href="#cb12-72"></a></span>
+<span id="cb12-73"><a href="#cb12-73"></a>The dataset includes 1653 rows and 22 columns. Key columns include the project title and abstract for which the grant was awarded, value of the grant, dates of awarding and termination, and details about the organization the grant was allocated to. Both numerical and categorical variables are represented in the dataset, and a more comprehensive breakdown of these variables can be found in the <span class="in">`glimpse()`</span> above, or in the metadata/readme.</span>
+<span id="cb12-74"><a href="#cb12-74"></a></span>
+<span id="cb12-75"><a href="#cb12-75"></a>I chose this dataset for two primary reasons: the first is that as a student in the Master of Public Policy program, I find federal policy very interesting. This is especially true given the scope of the changes seen since the beginning of Trump&#39;s second term, including drastic measures like slashing research grants. The other main reason I selected this dataset is due to the contemporary relevance of this issue: the Trump Administration is enacting these terminations live, and this data is both formative and still evolving. Tracking these terminations is critical to documenting these measures aimed at inhibiting scientific research in the United States. And although I am well aware that the plots produced here will hardly rival the research I&#39;m sure is being investigated on these grants, I find it important to increase awareness to both the scope of these terminations as well as the chaos surrounding them, making documentation ever more difficult.</span>
+<span id="cb12-76"><a href="#cb12-76"></a></span>
+<span id="cb12-77"><a href="#cb12-77"></a><span class="fu">## Questions</span></span>
+<span id="cb12-78"><a href="#cb12-78"></a></span>
+<span id="cb12-79"><a href="#cb12-79"></a>**1. Which scientific domains saw the highest grant termination rates?**</span>
+<span id="cb12-80"><a href="#cb12-80"></a></span>
+<span id="cb12-81"><a href="#cb12-81"></a>This question uses directorates to compare the dollar value of terminated grants over time. NSF directorates are the highest levels of administrative organizations administering grants. Examples include STEM Education and Social, Behavioral, and Economic Sciences.</span>
+<span id="cb12-82"><a href="#cb12-82"></a></span>
+<span id="cb12-83"><a href="#cb12-83"></a>Hypothesis: I expect directorates relating to STEM research to be most affected at the outset of the cancellations.</span>
+<span id="cb12-84"><a href="#cb12-84"></a></span>
+<span id="cb12-85"><a href="#cb12-85"></a>**2. Were grant terminations clustered by geography or motivated by states&#39; political leanings?**</span>
+<span id="cb12-86"><a href="#cb12-86"></a></span>
+<span id="cb12-87"><a href="#cb12-87"></a>This question attempts to analyze how the quantity of grants terminated varies by state, and will superimpose state partisanship to understand how heterogeneity in terminated grants is impacted by this variable.</span>
+<span id="cb12-88"><a href="#cb12-88"></a></span>
+<span id="cb12-89"><a href="#cb12-89"></a>Hypothesis: I expect Democrat-leaning states may have more grants canceled due to the polarized nature of these terminations.</span>
+<span id="cb12-90"><a href="#cb12-90"></a></span>
+<span id="cb12-91"><a href="#cb12-91"></a><span class="fu">## Analysis Plans</span></span>
+<span id="cb12-92"><a href="#cb12-92"></a></span>
+<span id="cb12-93"><a href="#cb12-93"></a><span class="fu">### Question 1</span></span>
+<span id="cb12-94"><a href="#cb12-94"></a></span>
+<span id="cb12-95"><a href="#cb12-95"></a><span class="ss">1.  </span>Data wrangling: select the necessary variables for this plot: <span class="in">`directorate`</span>, a character categorical column to identify the NSF organization awarding the grant; <span class="in">`usaspending_obligated`</span>, the dollar value of funding lost by the grant terminations; and <span class="in">`termination_letter_date`</span>, the date when the organization was informed of the termination of the grant. This variable is used as a proxy for termination date as actual expected end dates of the grants are only estimated and not confirmed. I do not expect to need further wrangling.</span>
+<span id="cb12-96"><a href="#cb12-96"></a></span>
+<span id="cb12-97"><a href="#cb12-97"></a><span class="ss">2.  </span>Create plot: I envision time-series plots of moving averages of value of grant over time. These plots will be faceted by directorate. Based on what I&#39;ve researched, ggplot has moving average functionality within the <span class="in">`geom_ma()`</span> function, however if this is not able to capture the variation I want, I can calculate the moving averages by directorate in the data wrangling process.</span>
+<span id="cb12-98"><a href="#cb12-98"></a></span>
+<span id="cb12-99"><a href="#cb12-99"></a><span class="ss">3.  </span><span class="sc">\*</span>Note: as revealed in the above code chunk, there are very few missing observations (four missings from <span class="in">`termination_letter_date`</span>, two from <span class="in">`directorate`</span>, and two from <span class="in">`usaspending_obligated`</span>). Hence, these rows will be dropped when coding this plot.</span>
+<span id="cb12-100"><a href="#cb12-100"></a></span>
+<span id="cb12-101"><a href="#cb12-101"></a><span class="fu">### Question 2</span></span>
+<span id="cb12-102"><a href="#cb12-102"></a></span>
+<span id="cb12-103"><a href="#cb12-103"></a><span class="ss">1.  </span>Data wrangling: sum the number of grants terminated by state, collapse the dataset. This will result in two variables: <span class="in">`org_state`</span> and a new variable, <span class="in">`terminations_quant`</span>, a double. There will be one row per state. No missing values will be generated as there are no missing <span class="in">`org_state`</span> observations.</span>
+<span id="cb12-104"><a href="#cb12-104"></a><span class="ss">2.  </span>Merge dataset of 2024 presidential Electoral College outcomes by state (i.e. whether the state&#39;s electoral votes were allocated to Kamala Harris or Donald Trump). This will yield the creation of a new binary variable, <span class="in">`elect_trump_24`</span>, a logic variable equal to 1/TRUE if the state allocated all (or a majority in the cases of Nebraska and Maine) of its electoral votes to Donald Trump in 2024, or 0/FALSE if the votes were allocated to Kamala Harris.</span>
+<span id="cb12-105"><a href="#cb12-105"></a><span class="ss">3.  </span><span class="sc">\*</span>Note: I have yet to figure out how to encode both of these variables (<span class="in">`terminations_quant`</span> and <span class="in">`elect_trump_24`</span> into the aesthetic mappings of the map plot. I do not know whether I have to encode them both into a single variable (where positive values of quantity of grants terminated represent &quot;red&quot; states and negative values represent &quot;blue&quot; states), or if I can separately map these variables onto fill and intensity aesthetics. Advice would be appreciated.</span>
+<span id="cb12-106"><a href="#cb12-106"></a><span class="ss">4.  </span><span class="sc">\*</span>Note: I also need to figure out a way to standardize the grant terminations variable. Solely using the quantity of grants terminated will introduce skewness as larger, more populated states will inherently have more grants that can be cancelled, thereby veiling the relationship between a state&#39;s partisanship and the number of grants cancelled. I could do this by using the value of grants terminated divided by the state&#39;s GDP, but I am not sold on this solution. Again, advice would be appreciated.</span>
+<span id="cb12-107"><a href="#cb12-107"></a><span class="ss">5.  </span>Create plot: I envision a map plot of states in the United States with each state colored either red or blue by 2024 presidential election result and the number of grants terminated mapped to the intensity of the color). States without a winner-take-all electoral system (i.e. Nebraska and Maine) will be coded by the candidate who won the majority of that state&#39;s electoral votes in 2024 (Trump in Nebraska and Harris in Maine). This behavior will be noted in the write-up and in the plot itself.</span>
+<span id="cb12-108"><a href="#cb12-108"></a><span class="ss">6.  </span>The plot will be first introduced by showing a single state coded by its 2024 presidential outcome and quantity of grant terminations. This will help ease the viewer into understanding the chart. Then the whole country will be displayed as well as smaller/regional chunks of areas with smaller/more dense states. This helps ensure that the mapped data is viewable in every state.</span>
+<span id="cb12-109"><a href="#cb12-109"></a><span class="ss">7.  </span>A table of the grant terminations by state will be shown in the write-up to allow for more detailed analysis.</span>
+<span id="cb12-110"><a href="#cb12-110"></a></span>
+<span id="cb12-111"><a href="#cb12-111"></a><span class="fu">## Plan of Attack</span></span>
+<span id="cb12-112"><a href="#cb12-112"></a></span>
+<span id="cb12-113"><a href="#cb12-113"></a>| Task | Status | Due | Priority | Summary |</span>
+<span id="cb12-114"><a href="#cb12-114"></a>|----|----|----|----|----|</span>
+<span id="cb12-115"><a href="#cb12-115"></a>| Finalize proposal for peer review | Completed | 2025-06-13 | High |  |</span>
+<span id="cb12-116"><a href="#cb12-116"></a>| Respond to peer reviews | Completed | 2025-06-18 | Medium | Amended proposal to address issues, closed issues. |</span>
+<span id="cb12-117"><a href="#cb12-117"></a>| Submit for instructor review | Completed | 2025-06-18 | High |  |</span>
+<span id="cb12-118"><a href="#cb12-118"></a>| Question 1 plotting | Completed | 2025-07-02 | High | Personal deadline: 2025-06-26 |</span>
+<span id="cb12-119"><a href="#cb12-119"></a>| Question 2 plotting | Completed | 2025-07-02 | High | Personal deadline: 2025-06-26 |</span>
+<span id="cb12-120"><a href="#cb12-120"></a>| Write-up | In progress | 2025-07-02 | Low | Personal deadline: 2025-06-28 |</span>
+<span id="cb12-121"><a href="#cb12-121"></a>| Presentation | Not started | 2025-07-02 | Low | Personal deadline: 2025-06-28 |</span>
+<span id="cb12-122"><a href="#cb12-122"></a>| Revision | Not started | 2025-07-02 | Low | Personal deadline: 2025-06-29 |</span>
+<span id="cb12-123"><a href="#cb12-123"></a>| Final .qmd publication | Not started | 2025-07-02 | Low | Personal deadline: 2025-06-29 |</span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
